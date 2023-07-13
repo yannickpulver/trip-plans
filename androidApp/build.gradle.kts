@@ -5,10 +5,10 @@ plugins {
 }
 
 android {
-    namespace = "com.yannickpulver.tripplans.android"
+    namespace = "com.yannickpulver.tripplans"
     compileSdk = 33
     defaultConfig {
-        applicationId = "com.yannickpulver.tripplans.android"
+        applicationId = "com.yannickpulver.tripplans"
         minSdk = 24
         targetSdk = 33
         versionCode = 1
