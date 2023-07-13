@@ -50,11 +50,19 @@ kotlin {
                 implementation(compose.material3)
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.components.resources)
+
+                api("io.insert-koin:koin-core:3.2.0")
             }
         }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
+            }
+        }
+
+        val androidMain by getting {
+            dependencies {
+                implementation("io.insert-koin:koin-androidx-compose:3.4.2")
             }
         }
 
