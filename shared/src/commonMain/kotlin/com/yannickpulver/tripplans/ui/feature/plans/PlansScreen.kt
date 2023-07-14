@@ -1,5 +1,6 @@
 package com.yannickpulver.tripplans.ui.feature.plans
 
+import PlansViewModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,8 +17,19 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import dev.icerock.moko.mvvm.compose.getViewModel
+import dev.icerock.moko.mvvm.compose.viewModelFactory
+import org.koin.compose.koinInject
+
+@Composable
+fun PlansRoute(viewModel: PlansViewModel = koinInject()) {
+    val state by viewModel.state.collectAsState()
+    PlansScreen(state)
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,6 +52,5 @@ fun PlansScreen(state: PlansState) {
                 }
             }
         }
-
     }
 }

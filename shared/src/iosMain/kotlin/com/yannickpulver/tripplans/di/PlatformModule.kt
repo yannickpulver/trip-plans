@@ -7,10 +7,5 @@ import org.koin.core.module.Module
 import org.koin.dsl.module
 
 actual fun getPlatformModule(): Module = module {
-    factory {
-        PlansViewModel()
-    }
-}
-object GetViewModels: KoinComponent {
-    fun getPlansViewModel() = get<PlansViewModel>()
+
 }

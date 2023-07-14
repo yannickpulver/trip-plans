@@ -51,7 +51,8 @@ kotlin {
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.components.resources)
 
-                api("io.insert-koin:koin-core:3.2.0")
+                api("io.insert-koin:koin-core:3.4.2")
+                api("io.insert-koin:koin-compose:1.0.3")
             }
         }
         val commonTest by getting {
