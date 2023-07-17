@@ -11,6 +11,6 @@ import com.yannickpulver.tripplans.ui.theme.AppTheme
 @Composable
 fun PlansScreenPreview() {
     AppTheme(useDarkTheme = isSystemInDarkTheme(), dynamicColor = false) {
-        PlansScreen(state = PlansState.Preview)
+        PlansScreen(state = PlansState.Preview, {})
     }
 }

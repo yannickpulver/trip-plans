@@ -56,10 +56,11 @@ kotlin {
                 implementation(libs.koin.compose)
                 implementation(libs.image.loader)
 
-
                 // Firebase
                 implementation("dev.gitlive:firebase-auth:1.8.0")
                 implementation("dev.gitlive:firebase-firestore:1.8.0")
+
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
             }
         }
         val commonTest by getting {

@@ -15,15 +15,20 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -37,18 +42,22 @@ import org.koin.compose.koinInject
 @Composable
 fun PlansRoute(viewModel: PlansViewModel = koinInject()) {
     val state by viewModel.state.collectAsState()
-    PlansScreen(state)
+    PlansScreen(state = state, addPlan = viewModel::addPlan)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlansScreen(state: PlansState) {
+fun PlansScreen(state: PlansState, addPlan: () -> Unit) {
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { },
+                onClick = addPlan,
                 content = { Icon(Icons.Default.Add, contentDescription = "Add") })
-        }, modifier = Modifier.fillMaxSize()
+        },
+        bottomBar = {
+            NavigationBar()
+        },
+        modifier = Modifier.fillMaxSize()
     ) {
         LazyColumn(
             Modifier.padding(it).fillMaxWidth(),
@@ -59,6 +68,23 @@ fun PlansScreen(state: PlansState) {
                 PlanItem(name = it)
             }
         }
+    }
+}
+
+@Composable
+private fun NavigationBar() {
+    val selectedIndex = remember { mutableStateOf(0) }
+    NavigationBar {
+        NavigationBarItem(
+            selected = selectedIndex.value == 0,
+            icon = { Icon(Icons.Rounded.Home, contentDescription = "Plans") },
+            label = { Text("Plans") },
+            onClick = { selectedIndex.value = 0 })
+        NavigationBarItem(
+            selected = selectedIndex.value == 1,
+            icon = { Icon(Icons.Rounded.Person, contentDescription = "Other") },
+            label = { Text("Other") },
+            onClick = { selectedIndex.value = 1 })
     }
 }
 
