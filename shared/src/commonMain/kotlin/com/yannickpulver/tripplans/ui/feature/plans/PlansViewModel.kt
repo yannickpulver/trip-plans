@@ -4,6 +4,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 class PlansViewModel() : ViewModel() {
 
-    val state = MutableStateFlow(PlansState())
+    val state = MutableStateFlow(PlansState.Preview)
 
 }

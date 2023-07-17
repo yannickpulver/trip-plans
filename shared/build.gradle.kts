@@ -53,6 +53,7 @@ kotlin {
 
                 api("io.insert-koin:koin-core:3.4.2")
                 api("io.insert-koin:koin-compose:1.0.3")
+                api("io.github.qdsfdhvh:image-loader:1.6.0")
             }
         }
         val commonTest by getting {
