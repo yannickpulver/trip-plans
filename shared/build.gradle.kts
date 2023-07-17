@@ -3,6 +3,7 @@ plugins {
     kotlin("native.cocoapods")
     id("com.android.library")
     id("org.jetbrains.compose")
+    kotlin("plugin.serialization")
 }
 
 @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
@@ -51,9 +52,14 @@ kotlin {
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.components.resources)
 
-                api("io.insert-koin:koin-core:3.4.2")
-                api("io.insert-koin:koin-compose:1.0.3")
-                api("io.github.qdsfdhvh:image-loader:1.6.0")
+                implementation(libs.koin.core)
+                implementation(libs.koin.compose)
+                implementation(libs.image.loader)
+
+
+                // Firebase
+                implementation("dev.gitlive:firebase-auth:1.8.0")
+                implementation("dev.gitlive:firebase-firestore:1.8.0")
             }
         }
         val commonTest by getting {
@@ -64,7 +70,7 @@ kotlin {
 
         val androidMain by getting {
             dependencies {
-                implementation("io.insert-koin:koin-androidx-compose:3.4.2")
+                implementation(libs.koin.androidx.compose)
             }
         }
 

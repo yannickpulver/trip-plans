@@ -1,6 +1,7 @@
 package com.yannickpulver.tripplans.di
 
 import PlansViewModel
+import com.yannickpulver.tripplans.data.FirebaseRepo
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
@@ -18,7 +19,10 @@ private fun startKoin(extras: KoinApplication.() -> Unit) = startKoin {
     extras()
     modules(
         module {
-            viewModelDefinition<PlansViewModel> { PlansViewModel() }
+            single { FirebaseRepo() }
+
+
+            viewModelDefinition<PlansViewModel> { PlansViewModel(get()) }
         },
         getPlatformModule()
     )
