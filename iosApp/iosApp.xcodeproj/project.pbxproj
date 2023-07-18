@@ -13,7 +13,7 @@
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
 		A4BDCA6468B87D0AE986F8E0 /* Pods_iosApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24CB1113F16F3689C16C8F3A /* Pods_iosApp.framework */; };
 		E63A92DF2A602D4500F4F2E7 /* ComposeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E63A92DE2A602D4500F4F2E7 /* ComposeView.swift */; };
-		E6D9BCFC2A659FEB00C9A712 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E6D9BCFB2A659FEB00C9A712 /* GoogleService-Info.plist */; };
+		E69E98E22A66BC51007BC655 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E69E98E12A66BC51007BC655 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,7 +27,7 @@
 		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E63A92DE2A602D4500F4F2E7 /* ComposeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeView.swift; sourceTree = "<group>"; };
-		E6D9BCFB2A659FEB00C9A712 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../../Desktop/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		E69E98E12A66BC51007BC655 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,7 +70,7 @@
 		7555FF72242A565900829871 = {
 			isa = PBXGroup;
 			children = (
-				E6D9BCFB2A659FEB00C9A712 /* GoogleService-Info.plist */,
+				E69E98E12A66BC51007BC655 /* GoogleService-Info.plist */,
 				7555FF7D242A565900829871 /* iosApp */,
 				7555FF7C242A565900829871 /* Products */,
 				52D508396EBEDA1CC01C298B /* Pods */,
@@ -162,7 +162,7 @@
 			files = (
 				058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */,
 				058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */,
-				E6D9BCFC2A659FEB00C9A712 /* GoogleService-Info.plist in Resources */,
+				E69E98E22A66BC51007BC655 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

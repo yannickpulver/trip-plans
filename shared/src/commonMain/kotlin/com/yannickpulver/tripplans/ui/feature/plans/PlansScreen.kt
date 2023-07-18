@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.rounded.Home
@@ -26,6 +27,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,12 +44,20 @@ import org.koin.compose.koinInject
 @Composable
 fun PlansRoute(viewModel: PlansViewModel = koinInject()) {
     val state by viewModel.state.collectAsState()
+
     PlansScreen(state = state, addPlan = viewModel::addPlan)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlansScreen(state: PlansState, addPlan: () -> Unit) {
+    val lazyListState = rememberLazyListState()
+
+    LaunchedEffect(state) {
+        lazyListState.animateScrollToItem(0)
+    }
+
+
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
@@ -62,9 +72,10 @@ fun PlansScreen(state: PlansState, addPlan: () -> Unit) {
         LazyColumn(
             Modifier.padding(it).fillMaxWidth(),
             contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            state = lazyListState
         ) {
-            items(state.plans) {
+            items(state.plans, key = { it }) {
                 PlanItem(name = it)
             }
         }
