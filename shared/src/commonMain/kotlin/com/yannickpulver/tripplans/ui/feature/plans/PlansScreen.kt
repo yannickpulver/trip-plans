@@ -1,10 +1,12 @@
 package com.yannickpulver.tripplans.ui.feature.plans
 
 import PlansViewModel
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.rounded.Home
@@ -22,9 +25,12 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,6 +45,7 @@ import com.seiko.imageloader.model.ImageRequest
 import com.seiko.imageloader.model.ImageResult
 import com.seiko.imageloader.rememberImageAction
 import com.seiko.imageloader.rememberImageActionPainter
+import com.yannickpulver.tripplans.ui.components.Chip
 import org.koin.compose.koinInject
 
 @Composable
@@ -99,36 +106,42 @@ private fun NavigationBar() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlanItem(name: String, modifier: Modifier = Modifier) {
     Card(modifier.fillMaxWidth()) {
         Column {
             CardImage(name, Modifier.fillMaxWidth().height(200.dp))
-            Text("Item $name", Modifier.padding(16.dp))
+            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    "Item $name",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Chip("Iceberg")
+            }
         }
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun CardImage(name: String, modifier: Modifier = Modifier) {
     val request = remember { ImageRequest("https://source.unsplash.com/random/700x400?${name}") }
     val action by rememberImageAction(request)
     val painter = rememberImageActionPainter(action)
-    println("action: $action")
 
-    AnimatedContent(action) {
-        when (it) {
-            is ImageResult -> {
-                Image(
-                    painter = painter,
-                    contentDescription = "name",
-                    contentScale = ContentScale.Crop,
-                    modifier = modifier
-                )
-            }
-
-            else -> Unit
+    val color = LocalContentColor.current.copy(0.2f)
+    Box(modifier.fillMaxSize().background(color)) {
+        AnimatedVisibility(
+            visible = action is ImageResult,
+            enter = fadeIn(),
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Image(
+                painter = painter,
+                contentDescription = "name",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
         }
     }
 }
