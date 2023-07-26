@@ -1,6 +1,5 @@
 import com.yannickpulver.tripplans.data.FirebaseRepo
 import com.yannickpulver.tripplans.ui.feature.plans.PlansState
-import com.yannickpulver.tripplans.ui.feature.plans.getRandomLocation
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,9 +15,9 @@ class PlansViewModel(private val firebaseRepo: FirebaseRepo) : ViewModel() {
         state.copy(locations = plans?.items.orEmpty().reversed())
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), PlansState.Empty)
 
-    fun addPlan() {
+    fun add(location: String) {
         viewModelScope.launch {
-            firebaseRepo.addPlan(getRandomLocation())
+            firebaseRepo.addPlan(location)
         }
     }
 

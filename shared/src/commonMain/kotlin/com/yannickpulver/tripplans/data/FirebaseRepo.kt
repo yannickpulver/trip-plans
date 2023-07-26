@@ -45,24 +45,19 @@ class FirebaseRepo {
         val user = getUser()
         val ref = db.collection("plans").document(user?.uid.orEmpty())
         val date = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-        val dateString = "${date.hour}:${date.minute}:${date.second}"
+        //val dateString = "${date.hour}:${date.minute}:${date.second}"
 
         if (!ref.get().exists) {
             ref.set(PlanDto(items = listOf(name)))
         } else {
-            ref.update("items" to FieldValue.arrayUnion("$name $dateString"))
-            // if (ref.get().data<PlanDto>().items.contains(name)) {
-            //     ref.update("items" to FieldValue.arrayRemove(name))
-            // } else {
-            //     ref.update("items" to FieldValue.arrayUnion(name))
-            // }
+            ref.update("items" to FieldValue.arrayUnion(name))
         }
     }
 
     fun getPlans(): Flow<PlanDto?> {
         return userFlow.flatMapLatest {
             it?.let { user ->
-                val ref = db.collection("plans").document(user?.uid.orEmpty())
+                val ref = db.collection("plans").document(user.uid)
                 ref.snapshots.map { if (it.exists) it.data() else null }
             } ?: flowOf(null)
 

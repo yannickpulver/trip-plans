@@ -5,13 +5,16 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -23,9 +26,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.rounded.List
 import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.Button
 import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissState
 import androidx.compose.material3.DismissValue
@@ -38,21 +42,25 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberDismissState
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.seiko.imageloader.model.ImageRequest
@@ -65,42 +73,113 @@ import org.koin.compose.koinInject
 @Composable
 fun PlansRoute(viewModel: PlansViewModel = koinInject()) {
     val state by viewModel.state.collectAsState()
-
-    PlansScreen(state = state, addPlan = viewModel::addPlan, remote = viewModel::removePlan)
+    PlansScreen(state = state, add = viewModel::add, remove = viewModel::removePlan)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlansScreen(state: PlansState, addPlan: () -> Unit, remote: (String) -> Unit) {
-    val lazyListState = rememberLazyListState()
-
-    LaunchedEffect(state) {
-        lazyListState.animateScrollToItem(0)
-    }
-
+fun PlansScreen(state: PlansState, add: (String) -> Unit, remove: (String) -> Unit) {
+    var showBottomSheet by remember { mutableStateOf(false) }
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = addPlan,
-                content = { Icon(Icons.Default.Add, contentDescription = "Add") })
+            AnimatedVisibility(
+                visible = !showBottomSheet,
+                enter = fadeIn() + slideInVertically { it / 2 },
+                exit = fadeOut() + slideOutVertically { it / 2 }
+            ) {
+                FloatingActionButton(
+                    onClick = { showBottomSheet = true },
+                    content = { Icon(Icons.Default.Add, contentDescription = "Add") })
+            }
         },
         bottomBar = {
             NavigationBar()
         },
         modifier = Modifier.fillMaxSize()
     ) {
-        LazyColumn(
-            Modifier.padding(it).fillMaxWidth(),
-            state = lazyListState
-        ) {
-            itemsIndexed(state.locations, key = { index, it -> it }) { index, location ->
-                if (index > 0) {
-                    Divider(Modifier.fillMaxSize())
-                }
+        val sheetState =
+            rememberStandardBottomSheetState(SheetValue.Hidden, skipHiddenState = false)
+        val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = sheetState)
 
-                DismissableLocationItem(remote, location)
+        LaunchedEffect(showBottomSheet) {
+            if (showBottomSheet) {
+                sheetState.expand()
+            } else {
+                sheetState.hide()
             }
+        }
+
+        LaunchedEffect(sheetState.currentValue) {
+            if (sheetState.currentValue == SheetValue.Hidden) {
+                showBottomSheet = false
+            }
+        }
+
+        BottomSheetScaffold(
+            scaffoldState = scaffoldState,
+            sheetPeekHeight = 0.dp,
+            sheetContent = {
+                AddPlanContent(add)
+            },
+            content = {
+                PlanScreenContent(state = state, remove = remove, modifier = Modifier.padding(it))
+            })
+
+    }
+}
+
+@Composable
+private fun AddPlanContent(add: (String) -> Unit) {
+    val (textState, onTextChanged) = remember { mutableStateOf("") }
+
+    Column(
+        Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(bottom = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        TextField(
+            value = textState,
+            onValueChange = onTextChanged,
+            label = { Text("Location") },
+            modifier = Modifier
+                .fillMaxWidth()
+        )
+        Button(
+            onClick = {
+                add(textState)
+                onTextChanged("")
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp)
+        ) {
+            Text("Add")
+        }
+        Spacer(Modifier.padding(bottom = 80.dp))
+    }
+}
+
+@Composable
+private fun PlanScreenContent(
+    state: PlansState,
+    remove: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val lazyListState = rememberLazyListState()
+
+    LaunchedEffect(state.locations) {
+        lazyListState.animateScrollToItem(0)
+    }
+
+    LazyColumn(
+        modifier.fillMaxWidth(),
+        state = lazyListState
+    ) {
+        itemsIndexed(state.locations, key = { index, it -> it }) { index, location ->
+            if (index > 0) {
+                Divider(Modifier.fillMaxSize())
+            }
+            DismissableLocationItem(remove, location)
         }
     }
 }
@@ -193,7 +272,7 @@ fun LocationItem(name: String, modifier: Modifier = Modifier) {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    "Item $name",
+                    "$name",
                     style = MaterialTheme.typography.titleMedium
                 )
                 Chip("Iceberg")
