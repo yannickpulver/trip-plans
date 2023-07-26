@@ -1,9 +1,9 @@
 package com.yannickpulver.tripplans.ui.feature.plans
 
-data class PlansState(val plans: List<String> = emptyList()) {
+data class PlansState(val locations: List<String> = emptyList()) {
 
     companion object {
-        val Preview = PlansState(plans = listOf("Antarctica", "Falkland Islands", "Ilulissat", "Svalbard"))
+        val Preview = PlansState(locations = listOf("Antarctica", "Falkland Islands", "Ilulissat", "Svalbard"))
         val Empty = PlansState()
     }
 }

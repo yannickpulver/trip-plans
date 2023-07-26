@@ -13,12 +13,18 @@ class PlansViewModel(private val firebaseRepo: FirebaseRepo) : ViewModel() {
     val _state = MutableStateFlow(PlansState.Empty)
 
     val state = combine(_state, firebaseRepo.getPlans()) { state, plans ->
-        state.copy(plans = plans?.items.orEmpty().reversed())
+        state.copy(locations = plans?.items.orEmpty().reversed())
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), PlansState.Empty)
 
     fun addPlan() {
         viewModelScope.launch {
             firebaseRepo.addPlan(getRandomLocation())
+        }
+    }
+
+    fun removePlan(plan: String) {
+        viewModelScope.launch {
+            firebaseRepo.removePlan(plan)
         }
     }
 }

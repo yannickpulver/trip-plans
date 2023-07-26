@@ -63,9 +63,15 @@ class FirebaseRepo {
         return userFlow.flatMapLatest {
             it?.let { user ->
                 val ref = db.collection("plans").document(user?.uid.orEmpty())
-                ref.snapshots.map { if (it.exists) it.data<PlanDto>() else null }
+                ref.snapshots.map { if (it.exists) it.data() else null }
             } ?: flowOf(null)
 
         }
+    }
+
+    suspend fun removePlan(plan: String) {
+        val user = getUser()
+        val ref = db.collection("plans").document(user?.uid.orEmpty())
+        ref.update("items" to FieldValue.arrayRemove(plan))
     }
 }
