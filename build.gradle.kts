@@ -7,6 +7,12 @@ plugins {
     id("com.google.gms.google-services").version("4.3.14").apply(false)
 }
 
+buildscript {
+    dependencies {
+        classpath("com.codingfeline.buildkonfig:buildkonfig-gradle-plugin:0.13.3")
+    }
+}
+
 tasks.register("clean", Delete::class) {
     delete(rootProject.buildDir)
 }

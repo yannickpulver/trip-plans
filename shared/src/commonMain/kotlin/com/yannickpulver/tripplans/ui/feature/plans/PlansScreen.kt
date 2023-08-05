@@ -10,11 +10,11 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -23,13 +23,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.rounded.List
 import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material3.BottomSheetScaffold
-import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissState
 import androidx.compose.material3.DismissValue
@@ -41,55 +43,71 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberDismissState
-import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.seiko.imageloader.model.ImageRequest
 import com.seiko.imageloader.model.ImageResult
 import com.seiko.imageloader.rememberImageAction
 import com.seiko.imageloader.rememberImageActionPainter
-import com.yannickpulver.tripplans.ui.components.Chip
+import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
 @Composable
 fun PlansRoute(viewModel: PlansViewModel = koinInject()) {
     val state by viewModel.state.collectAsState()
-    PlansScreen(state = state, add = viewModel::add, remove = viewModel::removePlan)
+    PlansScreen(
+        state = state,
+        add = viewModel::add,
+        remove = viewModel::removePlan,
+        query = viewModel::updateQuery
+    )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlansScreen(state: PlansState, add: (String) -> Unit, remove: (String) -> Unit) {
-    var showBottomSheet by remember { mutableStateOf(false) }
+fun PlansScreen(
+    state: PlansState,
+    add: (String) -> Unit,
+    remove: (String) -> Unit,
+    query: (String) -> Unit
+) {
+    val scope = rememberCoroutineScope()
+    var addState by remember { mutableStateOf(false) }
 
     Scaffold(
         floatingActionButton = {
             AnimatedVisibility(
-                visible = !showBottomSheet,
+                visible = !addState,
                 enter = fadeIn() + slideInVertically { it / 2 },
                 exit = fadeOut() + slideOutVertically { it / 2 }
             ) {
                 FloatingActionButton(
-                    onClick = { showBottomSheet = true },
+                    onClick = {
+                        scope.launch {
+                            addState = true
+                        }
+                    },
                     content = { Icon(Icons.Default.Add, contentDescription = "Add") })
             }
         },
@@ -98,73 +116,30 @@ fun PlansScreen(state: PlansState, add: (String) -> Unit, remove: (String) -> Un
         },
         modifier = Modifier.fillMaxSize()
     ) {
-        val sheetState =
-            rememberStandardBottomSheetState(SheetValue.Hidden, skipHiddenState = false)
-        val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = sheetState)
-
-        LaunchedEffect(showBottomSheet) {
-            if (showBottomSheet) {
-                sheetState.expand()
-            } else {
-                sheetState.hide()
-            }
-        }
-
-        LaunchedEffect(sheetState.currentValue) {
-            if (sheetState.currentValue == SheetValue.Hidden) {
-                showBottomSheet = false
-            }
-        }
-
-        BottomSheetScaffold(
-            scaffoldState = scaffoldState,
-            sheetPeekHeight = 0.dp,
-            sheetContent = {
-                AddPlanContent(add)
+        PlanScreenContent(
+            state = state,
+            add = {
+                add(it)
+                addState = false
             },
-            content = {
-                PlanScreenContent(state = state, remove = remove, modifier = Modifier.padding(it))
-            })
-
-    }
-}
-
-@Composable
-private fun AddPlanContent(add: (String) -> Unit) {
-    val (textState, onTextChanged) = remember { mutableStateOf("") }
-
-    Column(
-        Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(bottom = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        TextField(
-            value = textState,
-            onValueChange = onTextChanged,
-            label = { Text("Location") },
-            modifier = Modifier
-                .fillMaxWidth()
+            remove = remove,
+            modifier = Modifier.padding(it),
+            addVisible = addState,
+            query = query
         )
-        Button(
-            onClick = {
-                add(textState)
-                onTextChanged("")
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp)
-        ) {
-            Text("Add")
-        }
-        Spacer(Modifier.padding(bottom = 80.dp))
     }
 }
 
 @Composable
-private fun PlanScreenContent(
+fun PlanScreenContent(
     state: PlansState,
+    addVisible: Boolean,
+    add: (String) -> Unit,
     remove: (String) -> Unit,
+    query: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val focusRequester = remember { FocusRequester() }
     val lazyListState = rememberLazyListState()
 
     LaunchedEffect(state.locations) {
@@ -175,11 +150,69 @@ private fun PlanScreenContent(
         modifier.fillMaxWidth(),
         state = lazyListState
     ) {
+        if (addVisible) {
+            item {
+                AddLocationItem(
+                    focusRequester = focusRequester,
+                    add = add,
+                    query = query,
+                    state.predictions
+                )
+                Divider(Modifier.fillMaxSize())
+            }
+        }
+
         itemsIndexed(state.locations, key = { index, it -> it }) { index, location ->
             if (index > 0) {
                 Divider(Modifier.fillMaxSize())
             }
             DismissableLocationItem(remove, location)
+        }
+    }
+
+    LaunchedEffect(addVisible) {
+        if (addVisible) {
+            lazyListState.animateScrollToItem(0)
+            focusRequester.requestFocus()
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun AddLocationItem(
+    focusRequester: FocusRequester,
+    add: (String) -> Unit,
+    query: (String) -> Unit,
+    predictions: List<PlacePrediction>
+) {
+    val (textState, onTextChanged) = remember { mutableStateOf("") }
+    Column(
+        Modifier.fillMaxWidth().padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        OutlinedTextField(
+            value = textState,
+            onValueChange = {
+                onTextChanged(it)
+                query(it)
+            },
+            label = { Text("Add Location") },
+            modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = {
+                add(textState)
+                onTextChanged("")
+            })
+        )
+        OutlinedCard(
+            shape = RoundedCornerShape(0.dp, 0.dp, 8.dp, 8.dp),
+        ) {
+            predictions.forEach {
+                Text(
+                    text = it.description,
+                    modifier = Modifier.padding(16.dp).fillMaxWidth().clickable { add(it.description) })
+            }
         }
     }
 }
@@ -275,7 +308,6 @@ fun LocationItem(name: String, modifier: Modifier = Modifier) {
                     "$name",
                     style = MaterialTheme.typography.titleMedium
                 )
-                Chip("Iceberg")
             }
             CardImage(name, Modifier.size(72.dp).clip(RoundedCornerShape(8.dp)))
         }

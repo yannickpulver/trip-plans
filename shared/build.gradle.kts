@@ -1,9 +1,13 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+
 plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
     id("com.android.library")
     id("org.jetbrains.compose")
     kotlin("plugin.serialization")
+    id("com.codingfeline.buildkonfig")
 }
 
 @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
@@ -62,6 +66,12 @@ kotlin {
 
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+
+                // Ktor
+                implementation(libs.ktor.client.core)
+                implementation(libs.ktor.serialization.json)
+                implementation(libs.ktor.content.negotiation)
             }
         }
         val commonTest by getting {
@@ -73,6 +83,7 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(libs.koin.androidx.compose)
+                implementation(libs.ktor.client.android)
             }
         }
 
@@ -84,6 +95,9 @@ kotlin {
             iosX64Main.dependsOn(this)
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
+            dependencies {
+                implementation(libs.ktor.client.darwin)
+            }
         }
         val iosX64Test by getting
         val iosArm64Test by getting
@@ -107,4 +121,19 @@ dependencies {
     commonMainApi("dev.icerock.moko:mvvm-compose:0.16.1")
     commonMainApi("dev.icerock.moko:mvvm-flow:0.16.1")
     commonMainApi("dev.icerock.moko:mvvm-flow-compose:0.16.1")
+}
+
+
+buildkonfig {
+    packageName = "com.yannickpulver.tripplans"
+
+    // default config is required
+    defaultConfigs {
+        buildConfigField(
+            STRING,
+            "MAPS_API_KEY",
+            gradleLocalProperties(rootDir).getProperty("MAPS_API_KEY")
+        )
+    }
+
 }
