@@ -1,6 +1,6 @@
 *.iml
 .gradle
-.idea
+--.idea
 .DS_Store
 build
 captures
@@ -13,3 +13,5 @@ GoogleService-Info.plist
 google-services.json
 
 Pods/
+
+androidApp/*.keystore

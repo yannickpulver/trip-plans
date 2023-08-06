@@ -6,10 +6,10 @@ plugins {
 }
 
 android {
-    namespace = "com.yannickpulver.tripplans"
+    namespace = "com.yannickpulver.plans"
     compileSdk = 33
     defaultConfig {
-        applicationId = "com.yannickpulver.tripplans"
+        applicationId = "com.yannickpulver.plans"
         minSdk = 24
         targetSdk = 33
         versionCode = 1
@@ -19,15 +19,34 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.7"
+        kotlinCompilerExtensionVersion = "1.5.1"
     }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("debug.keystore")
+            storePassword = "yannickpulver"
+            keyAlias = "debug"
+            keyPassword = "yannickpulver"
+        }
+        create("release") {
+            storeFile = file("release.keystore")
+            storePassword = "Uy8-ho_XafMnc7r"
+            keyAlias = "release"
+            keyPassword = "Uy8-ho_XafMnc7r"
+        }
+    }
     buildTypes {
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("debug")
+            isMinifyEnabled = false
+        }
         getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = false
         }
     }

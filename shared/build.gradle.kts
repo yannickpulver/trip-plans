@@ -8,13 +8,15 @@ plugins {
     id("org.jetbrains.compose")
     kotlin("plugin.serialization")
     id("com.codingfeline.buildkonfig")
+    id("dev.icerock.mobile.multiplatform-resources")
+
 }
 
 @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
 kotlin {
     targetHierarchy.default()
 
-    android {
+    androidTarget {
         compilations.all {
             kotlinOptions {
                 jvmTarget = "17"
@@ -61,17 +63,22 @@ kotlin {
                 implementation(libs.image.loader)
 
                 // Firebase
-                implementation("dev.gitlive:firebase-auth:1.8.0")
-                implementation("dev.gitlive:firebase-firestore:1.8.0")
+                implementation(libs.firebase.auth)
+                implementation(libs.firebase.firestore)
 
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
-                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+                implementation(libs.kotlinx.serialization.json)
+                implementation(libs.kotlinx.datetime)
+                implementation(libs.kotlinx.coroutines.core)
 
                 // Ktor
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.serialization.json)
                 implementation(libs.ktor.content.negotiation)
+
+                implementation(libs.uuid)
+
+                implementation(libs.voyager.navigator)
+                implementation(libs.voyager.tabNavigator)
             }
         }
         val commonTest by getting {
@@ -81,6 +88,7 @@ kotlin {
         }
 
         val androidMain by getting {
+            dependsOn(commonMain)
             dependencies {
                 implementation(libs.koin.androidx.compose)
                 implementation(libs.ktor.client.android)
@@ -105,7 +113,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.yannickpulver.tripplans"
+    namespace = "com.yannickpulver.plans"
     compileSdk = 33
     defaultConfig {
         minSdk = 24
@@ -117,15 +125,17 @@ android {
 }
 dependencies {
     implementation(libs.androidx.core)
-    commonMainApi("dev.icerock.moko:mvvm-core:0.16.1")
-    commonMainApi("dev.icerock.moko:mvvm-compose:0.16.1")
-    commonMainApi("dev.icerock.moko:mvvm-flow:0.16.1")
-    commonMainApi("dev.icerock.moko:mvvm-flow-compose:0.16.1")
+    commonMainApi(libs.mvvm.core)
+    commonMainApi(libs.mvvm.compose)
+    commonMainApi(libs.mvvm.flow)
+    commonMainApi(libs.mvvm.flow.compose)
+    commonMainApi(libs.moko.resources)
+    commonMainApi(libs.moko.resources.compose) // for compose multiplatform
 }
 
 
 buildkonfig {
-    packageName = "com.yannickpulver.tripplans"
+    packageName = "com.yannickpulver.plans"
 
     // default config is required
     defaultConfigs {
@@ -135,5 +145,9 @@ buildkonfig {
             gradleLocalProperties(rootDir).getProperty("MAPS_API_KEY")
         )
     }
+}
 
+multiplatformResources {
+    multiplatformResourcesPackage = "com.yannickpulver.plans" // required
+    iosBaseLocalizationRegion = "en" // optional, default "en"
 }
