@@ -30,6 +30,7 @@ data class Place(
     val website: String? = null
 ) {
     val city = address_components.find { it.types.contains("locality") }
+
     companion object {
         val Preview = Place(
             formatted_address = "Zürich, Schweiz",

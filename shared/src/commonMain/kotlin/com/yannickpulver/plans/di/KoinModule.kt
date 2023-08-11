@@ -3,6 +3,7 @@ package com.yannickpulver.plans.di
 import LocationsViewModel
 import com.yannickpulver.plans.data.FirebaseRepo
 import com.yannickpulver.plans.data.GoogleMapsRepo
+import com.yannickpulver.plans.ui.feature.locations.detail.LocationDetailViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
@@ -40,7 +41,8 @@ private fun startKoin(extras: KoinApplication.() -> Unit) = startKoin {
 
             single { FirebaseRepo(get()) }
             single { GoogleMapsRepo(get()) }
-            viewModelDefinition<LocationsViewModel> { LocationsViewModel(get(), get()) }
+            viewModelDefinition { LocationsViewModel(get(), get()) }
+            viewModelDefinition { LocationDetailViewModel(get()) }
         },
         getPlatformModule()
     )

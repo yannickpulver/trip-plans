@@ -263,7 +263,7 @@ fun SwipeBackground(dismissState: DismissState) {
 fun LocationItem(place: Place, modifier: Modifier = Modifier) {
     val navigator = LocalNavigator.current
 
-    Surface(modifier.fillMaxWidth().clickable { navigator?.parent?.push(LocationDetailRoute(place)) }) {
+    Surface(modifier.fillMaxWidth().clickable { navigator?.parent?.push(LocationDetailRoute(place.id)) }) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp),

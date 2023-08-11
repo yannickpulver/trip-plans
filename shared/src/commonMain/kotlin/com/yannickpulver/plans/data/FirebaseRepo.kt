@@ -53,6 +53,17 @@ class FirebaseRepo constructor(private val json: Json) {
         }
     }
 
+    fun getLocation(id: String) : Flow<Place?> {
+        return userFlow.flatMapLatest {
+            it?.let { user ->
+                val ref = db.collection("plans").document(user.uid).collection("locations")
+                    .document(id)
+                ref.snapshots.map { it.data() }
+            } ?: flowOf(null)
+        }
+    }
+
+
     suspend fun removePlan(id: String) {
         val user = getUser()
         val ref = db.collection("plans").document(user?.uid.orEmpty()).collection("locations")
