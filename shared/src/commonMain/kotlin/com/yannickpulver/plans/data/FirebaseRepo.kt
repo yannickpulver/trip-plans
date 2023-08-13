@@ -12,10 +12,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
 
 class FirebaseRepo {
 
@@ -23,7 +21,6 @@ class FirebaseRepo {
     private val db = Firebase.firestore
 
     private val userFlow: MutableStateFlow<FirebaseUser?> = MutableStateFlow(auth.currentUser)
-
     private val userId get() = userFlow.map { it?.uid.orEmpty() } // flowOf("1234")
 
     init {
