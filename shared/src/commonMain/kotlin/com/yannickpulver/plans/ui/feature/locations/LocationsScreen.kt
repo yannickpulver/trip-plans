@@ -69,7 +69,7 @@ import com.yannickpulver.plans.ui.feature.locations.detail.LocationDetailRoute
 import dev.icerock.moko.resources.compose.stringResource
 import org.koin.compose.koinInject
 
-object LocationsTab : Tab {
+internal object LocationsTab : Tab {
     override val options: TabOptions
         @Composable
         get() {

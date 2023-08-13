@@ -44,6 +44,7 @@ kotlin {
         framework {
             baseName = "shared"
             isStatic = true
+            export("dev.icerock.moko:resources:0.23.0")
         }
     }
 
@@ -108,6 +109,8 @@ kotlin {
             dependencies {
                 implementation(libs.ktor.client.darwin)
             }
+
+
         }
         val iosX64Test by getting
         val iosArm64Test by getting
@@ -134,6 +137,7 @@ dependencies {
     commonMainApi(libs.moko.resources)
     commonMainApi(libs.moko.resources.compose) // for compose multiplatform
 }
+
 
 
 buildkonfig {

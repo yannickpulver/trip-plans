@@ -26,8 +26,6 @@ import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
 import com.yannickpulver.plans.MR
 import com.yannickpulver.plans.ui.feature.locations.LocationsTab
-import com.yannickpulver.plans.ui.feature.map.MapTab
-import com.yannickpulver.plans.ui.feature.profile.ProfileTab
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.launch
 
@@ -81,7 +79,6 @@ private fun BottomBar() {
     }
 }
 
-
 @Composable
 fun RowScope.TabItem(tab: Tab) {
     val tabNavigator = LocalTabNavigator.current
@@ -89,7 +86,7 @@ fun RowScope.TabItem(tab: Tab) {
     NavigationBarItem(
         selected = tabNavigator.current.key == tab.key,
         icon = {
-            Icon(painter = tab.options.icon!!, contentDescription = tab.options.title)
+            tab.options.icon?.let { Icon(painter = it, contentDescription = tab.options.title) }
         },
         label = { Text(text = tab.options.title) },
         onClick = { tabNavigator.current = tab })

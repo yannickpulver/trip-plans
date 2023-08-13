@@ -1,7 +1,6 @@
 package com.yannickpulver.plans.ui.feature.profile
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.List
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -12,7 +11,7 @@ import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.yannickpulver.plans.MR
 import dev.icerock.moko.resources.compose.stringResource
 
-object ProfileTab : Tab {
+internal object ProfileTab : Tab {
     override val options: TabOptions
         @Composable
         get() {

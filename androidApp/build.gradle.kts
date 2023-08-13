@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "com.yannickpulver.plans"
-    compileSdk = 33
+    compileSdk = 34
     defaultConfig {
         applicationId = "com.yannickpulver.plans"
         minSdk = 24

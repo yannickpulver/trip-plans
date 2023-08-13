@@ -40,7 +40,7 @@ private fun startKoin(extras: KoinApplication.() -> Unit) = startKoin {
                 }
             }
 
-            single { FirebaseRepo(get()) }
+            single { FirebaseRepo() }
             single { GoogleMapsRepo(get()) }
             viewModelDefinition { LocationsViewModel(get(), get()) }
             viewModelDefinition { LocationDetailViewModel(get()) }

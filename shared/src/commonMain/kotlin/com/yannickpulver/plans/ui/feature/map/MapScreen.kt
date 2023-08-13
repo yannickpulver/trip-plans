@@ -13,7 +13,7 @@ import com.yannickpulver.plans.data.dto.Place
 import dev.icerock.moko.resources.compose.stringResource
 import org.koin.compose.koinInject
 
-object MapTab : Tab {
+internal object MapTab : Tab {
     override val options: TabOptions
         @Composable
         get() {

@@ -10,18 +10,21 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
-class FirebaseRepo constructor(private val json: Json) {
+class FirebaseRepo {
 
     private val auth = Firebase.auth
     private val db = Firebase.firestore
 
     private val userFlow: MutableStateFlow<FirebaseUser?> = MutableStateFlow(auth.currentUser)
+
+    private val userId get() = userFlow.map { it?.uid.orEmpty() } // flowOf("1234")
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
@@ -29,7 +32,7 @@ class FirebaseRepo constructor(private val json: Json) {
         }
     }
 
-    suspend fun getUser(): FirebaseUser? {
+    private suspend fun getUser(): FirebaseUser? {
         return (auth.currentUser ?: signInAnonymously()).apply { userFlow.value = this }
     }
 
@@ -38,35 +41,30 @@ class FirebaseRepo constructor(private val json: Json) {
     }
 
     suspend fun addLocation(place: Place) {
-        val user = getUser()
-        val ref = db.collection("plans").document(user?.uid.orEmpty()).collection("locations")
+        val uid = userId.firstOrNull()
+        val ref = db.collection("plans").document(uid.orEmpty()).collection("locations")
             .document(place.id)
         ref.set(place)
     }
 
     fun getLocations(): Flow<List<Place?>> {
-        return userFlow.flatMapLatest {
-            it?.let { user ->
-                val ref = db.collection("plans").document(user.uid).collection("locations")
-                ref.snapshots.map { it.documents.map { it.data() } }
-            } ?: flowOf(emptyList())
+        return userId.flatMapLatest { uid ->
+            val ref = db.collection("plans").document(uid).collection("locations")
+            ref.snapshots.map { it.documents.map { it.data() } }
         }
     }
 
-    fun getLocation(id: String) : Flow<Place?> {
-        return userFlow.flatMapLatest {
-            it?.let { user ->
-                val ref = db.collection("plans").document(user.uid).collection("locations")
-                    .document(id)
-                ref.snapshots.map { it.data() }
-            } ?: flowOf(null)
+    fun getLocation(id: String): Flow<Place?> {
+        return userId.flatMapLatest { uid ->
+            val ref = db.collection("plans").document(uid).collection("locations")
+                .document(id)
+            ref.snapshots.map { it.data() }
         }
     }
-
 
     suspend fun removePlan(id: String) {
-        val user = getUser()
-        val ref = db.collection("plans").document(user?.uid.orEmpty()).collection("locations")
+        val uid = userId.firstOrNull()
+        val ref = db.collection("plans").document(uid.orEmpty()).collection("locations")
             .document(id)
         ref.delete()
     }

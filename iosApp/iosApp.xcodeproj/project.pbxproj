@@ -13,7 +13,7 @@
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
 		A5DB3D8612636D40C1AF5350 /* Pods_Plans.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E6A24BC1169A947F3C606C23 /* Pods_Plans.framework */; };
 		E63A92DF2A602D4500F4F2E7 /* ComposeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E63A92DE2A602D4500F4F2E7 /* ComposeView.swift */; };
-		E6D90A972A8014EB0057BC8F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E6D90A962A8014EB0057BC8F /* GoogleService-Info.plist */; };
+		E6EDA3A62A8919E6008F204C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E6EDA3A52A8919E6008F204C /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,7 +29,7 @@
 		AF8C17FD02416B3984AE7BBF /* Pods-Plans.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Plans.debug.xcconfig"; path = "Target Support Files/Pods-Plans/Pods-Plans.debug.xcconfig"; sourceTree = "<group>"; };
 		E63A92DE2A602D4500F4F2E7 /* ComposeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeView.swift; sourceTree = "<group>"; };
 		E6A24BC1169A947F3C606C23 /* Pods_Plans.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Plans.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		E6D90A962A8014EB0057BC8F /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		E6EDA3A52A8919E6008F204C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,7 +74,7 @@
 		7555FF72242A565900829871 = {
 			isa = PBXGroup;
 			children = (
-				E6D90A962A8014EB0057BC8F /* GoogleService-Info.plist */,
+				E6EDA3A52A8919E6008F204C /* GoogleService-Info.plist */,
 				7555FF7D242A565900829871 /* iosApp */,
 				7555FF7C242A565900829871 /* Products */,
 				52D508396EBEDA1CC01C298B /* Pods */,
@@ -116,7 +116,7 @@
 				7555FF79242A565900829871 /* Resources */,
 				2384BED703EF7640DADF0007 /* Frameworks */,
 				8B6A028B6455F53BAFFDAA17 /* [CP] Embed Pods Frameworks */,
-				B6840C777B8D570F1CC46C37 /* [CP] Copy Pods Resources */,
+				E6EDA3A72A891BB9008F204C /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -166,8 +166,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */,
-				E6D90A972A8014EB0057BC8F /* GoogleService-Info.plist in Resources */,
 				058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */,
+				E6EDA3A62A8919E6008F204C /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -191,23 +191,6 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Plans/Pods-Plans-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		B6840C777B8D570F1CC46C37 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Plans/Pods-Plans-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Plans/Pods-Plans-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Plans/Pods-Plans-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		E6D9BCFA2A65999B00C9A712 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -224,6 +207,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\ncd \"$SRCROOT/..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
+		};
+		E6EDA3A72A891BB9008F204C /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"$SRCROOT/../gradlew\" -p \"$SRCROOT/../\" :shared:copyFrameworkResourcesToApp \\\n    -Pmoko.resources.BUILT_PRODUCTS_DIR=\"$BUILT_PRODUCTS_DIR\" \\\n    -Pmoko.resources.CONTENTS_FOLDER_PATH=\"$CONTENTS_FOLDER_PATH\" \\\n    -Pkotlin.native.cocoapods.platform=\"$PLATFORM_NAME\" \\\n    -Pkotlin.native.cocoapods.archs=\"$ARCHS\" \\\n    -Pkotlin.native.cocoapods.configuration=\"$CONFIGURATION\"\n";
 		};
 		EFDC5B8E300388DC83C4792B /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
