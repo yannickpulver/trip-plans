@@ -19,8 +19,18 @@ import com.yannickpulver.plans.ui.feature.locations.detail.LoadingScreen
 
 @Composable
 actual fun Map(locations: List<Place>) {
-    if (locations.isEmpty()) return
 
+    Box(Modifier.fillMaxSize()) {
+        LoadingScreen()
+
+        if (locations.isNotEmpty()) {
+            MapContent(locations)
+        }
+    }
+}
+
+@Composable
+private fun MapContent(locations: List<Place>) {
     val cameraPositionState = rememberCameraPositionState()
 
     LaunchedEffect(Unit) {
@@ -32,20 +42,16 @@ actual fun Map(locations: List<Place>) {
         cameraPositionState.move(CameraUpdateFactory.newLatLngBounds(bounds, 200))
     }
 
-    Box(Modifier.fillMaxSize()) {
-        LoadingScreen()
-
-        GoogleMap(
-            modifier = Modifier.fillMaxSize().clip(MaterialTheme.shapes.medium),
-            cameraPositionState = cameraPositionState,
-        ) {
-            locations.forEach {
-                val latLng = LatLng(it.geometry.location.lat, it.geometry.location.lng)
-                Marker(
-                    state = MarkerState(position = latLng),
-                    title = it.name
-                )
-            }
+    GoogleMap(
+        modifier = Modifier.fillMaxSize().clip(MaterialTheme.shapes.medium),
+        cameraPositionState = cameraPositionState,
+    ) {
+        locations.forEach {
+            val latLng = LatLng(it.geometry.location.lat, it.geometry.location.lng)
+            Marker(
+                state = MarkerState(position = latLng),
+                title = it.name
+            )
         }
     }
 }
