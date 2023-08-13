@@ -26,6 +26,7 @@ import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
 import com.yannickpulver.plans.MR
 import com.yannickpulver.plans.ui.feature.locations.LocationsTab
+import com.yannickpulver.plans.ui.feature.map.MapTab
 import com.yannickpulver.plans.ui.feature.profile.ProfileTab
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.launch
@@ -76,13 +77,13 @@ private fun FloatingActionButton(show: Boolean = true) {
 @Composable
 private fun BottomBar() {
     NavigationBar {
-        TabItem(LocationsTab)
-        TabItem(ProfileTab)
+        TabItems()
     }
 }
 
+
 @Composable
-private fun RowScope.TabItem(tab: Tab) {
+fun RowScope.TabItem(tab: Tab) {
     val tabNavigator = LocalTabNavigator.current
 
     NavigationBarItem(
@@ -90,6 +91,6 @@ private fun RowScope.TabItem(tab: Tab) {
         icon = {
             Icon(painter = tab.options.icon!!, contentDescription = tab.options.title)
         },
-        label = { Text(stringResource(MR.strings.nav_profile)) },
+        label = { Text(text = tab.options.title) },
         onClick = { tabNavigator.current = tab })
 }

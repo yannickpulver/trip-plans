@@ -92,6 +92,8 @@ kotlin {
             dependencies {
                 implementation(libs.koin.androidx.compose)
                 implementation(libs.ktor.client.android)
+                implementation("com.google.maps.android:maps-compose:2.13.0")
+                implementation("com.google.maps.android:maps-compose-utils:2.13.0")
             }
         }
 

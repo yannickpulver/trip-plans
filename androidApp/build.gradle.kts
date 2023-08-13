@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     id("com.android.application")
     kotlin("android")
@@ -14,6 +16,8 @@ android {
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
+
+        manifestPlaceholders["MAPS_API_KEY"] = gradleLocalProperties(rootDir).getProperty("MAPS_API_KEY")
     }
     buildFeatures {
         compose = true
@@ -57,6 +61,7 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+
 }
 
 dependencies {

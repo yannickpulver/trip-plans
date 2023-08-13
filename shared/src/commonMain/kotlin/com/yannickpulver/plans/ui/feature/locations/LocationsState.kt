@@ -9,7 +9,7 @@ data class LocationsState(
 ) {
 
     companion object {
-        val Preview = LocationsState(locations = listOf(Place.Preview))
+        val Preview = LocationsState(locations = listOf(Place.Preview, Place.Preview, Place.Preview))
         val Empty = LocationsState()
     }
 }

@@ -1,5 +1,6 @@
 package com.yannickpulver.plans.ui.feature.locations.detail
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -65,9 +66,13 @@ fun LocationDetailScreen(id: String, viewModel: LocationDetailViewModel = koinIn
         viewModel.getLocation(id)
     }
 
-    state.value?.let {
-        LocationDetailScreenContent(it)
-    } ?: LoadingScreen()
+    AnimatedContent(state.value) {
+        if (it != null) {
+            LocationDetailScreenContent(it)
+        } else {
+            LoadingScreen()
+        }
+    }
 }
 
 @Composable
@@ -81,7 +86,7 @@ fun LoadingScreen() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun LocationDetailScreenContent(place: Place) {
+fun LocationDetailScreenContent(place: Place) {
     val navigator = LocalNavigator.current
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -144,6 +149,11 @@ private fun LocationDetailScreenContent(place: Place) {
                     }
 
                     WebsiteButton(place.website)
+
+                    MapTile(
+                        location = place.geometry.location,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
 
                     Text(place.toString())
                     Spacer(modifier = Modifier.height(200.dp))
