@@ -1,9 +1,15 @@
 import SwiftUI
 import shared
 
+
+
+
 struct ContentView: View {
 	var body: some View {
+        ZStack {
 		ComposeView()
+            .ignoresSafeArea(.all)
+        }
 	}
 }
 

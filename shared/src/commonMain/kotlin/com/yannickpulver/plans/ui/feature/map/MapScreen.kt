@@ -1,7 +1,9 @@
 package com.yannickpulver.plans.ui.feature.map
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.rounded.Map
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
@@ -17,7 +19,7 @@ internal object MapTab : Tab {
     override val options: TabOptions
         @Composable
         get() {
-            val icon = rememberVectorPainter(Icons.Default.Search)
+            val icon = rememberVectorPainter(Icons.Rounded.Map)
             val title = stringResource(MR.strings.nav_maps)
 
             return remember {

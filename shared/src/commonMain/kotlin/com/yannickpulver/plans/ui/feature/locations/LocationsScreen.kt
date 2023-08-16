@@ -12,10 +12,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -23,7 +27,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.rounded.List
+import androidx.compose.material.icons.rounded.ViewStream
 import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissState
 import androidx.compose.material3.DismissValue
@@ -73,7 +77,7 @@ internal object LocationsTab : Tab {
     override val options: TabOptions
         @Composable
         get() {
-            val icon = rememberVectorPainter(Icons.Rounded.List)
+            val icon = rememberVectorPainter(Icons.Rounded.ViewStream)
             val title = stringResource(MR.strings.nav_locations)
 
             return remember {
@@ -137,7 +141,8 @@ fun PlanScreenContent(
 
     LazyColumn(
         modifier.fillMaxWidth(),
-        state = lazyListState
+        state = lazyListState,
+        contentPadding = WindowInsets.statusBars.asPaddingValues()
     ) {
         if (addVisible) {
             item {
@@ -263,7 +268,9 @@ fun SwipeBackground(dismissState: DismissState) {
 fun LocationItem(place: Place, modifier: Modifier = Modifier) {
     val navigator = LocalNavigator.current
 
-    Surface(modifier.fillMaxWidth().clickable { navigator?.parent?.push(LocationDetailRoute(place.id)) }) {
+    Surface(
+        modifier.fillMaxWidth()
+            .clickable { navigator?.parent?.push(LocationDetailRoute(place.id)) }) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp),

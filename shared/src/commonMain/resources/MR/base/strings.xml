@@ -2,6 +2,7 @@
     <string name="nav.locations">Locations</string>
     <string name="nav.maps">Maps</string>
     <string name="nav.profile">Profile</string>
+    <string name="nav.plans">Plans</string>
     <string name="locations.add.hint">Add Location</string>
     <string name="locations.add.button">Add Location</string>
 </resources>
