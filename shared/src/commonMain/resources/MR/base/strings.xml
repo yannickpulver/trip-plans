@@ -5,4 +5,5 @@
     <string name="nav.plans">Plans</string>
     <string name="locations.add.hint">Add Location</string>
     <string name="locations.add.button">Add Location</string>
+    <string name="plans.add.button">Add Plan</string>
 </resources>

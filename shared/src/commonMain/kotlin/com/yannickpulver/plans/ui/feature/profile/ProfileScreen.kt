@@ -1,16 +1,16 @@
 package com.yannickpulver.plans.ui.feature.profile
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Badge
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import cafe.adriel.voyager.navigator.tab.Tab
@@ -43,8 +43,9 @@ internal object ProfileTab : Tab {
 @Composable
 fun ProfileScreen() {
     Scaffold {
-        Column(modifier = Modifier.padding(WindowInsets.statusBars.asPaddingValues())) {
-            Text("Profile")
+        // .padding(WindowInsets.statusBars.asPaddingValues())
+        Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+            Text("Profile", style = MaterialTheme.typography.titleMedium)
         }
     }
 }

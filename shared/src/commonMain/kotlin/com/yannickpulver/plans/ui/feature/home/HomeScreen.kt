@@ -1,14 +1,19 @@
 package com.yannickpulver.plans.ui.feature.home
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
@@ -21,8 +26,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.tab.CurrentTab
@@ -63,28 +69,24 @@ private fun FloatingActionButton(currentTab: Tab) {
 
     val color = animateColorAsState(
         targetValue = if (currentTab is LocationsTab) {
-            MaterialTheme.colorScheme.primary
+            MaterialTheme.colorScheme.primaryContainer
         } else {
-            MaterialTheme.colorScheme.tertiary
+            MaterialTheme.colorScheme.secondaryContainer
         }
     )
 
     val contentColor = animateColorAsState(
         targetValue = if (currentTab is LocationsTab) {
-            MaterialTheme.colorScheme.onPrimary
+            MaterialTheme.colorScheme.onPrimaryContainer
         } else {
-            MaterialTheme.colorScheme.onTertiary
+            MaterialTheme.colorScheme.onSecondaryContainer
         }
-    )
-
-    val rotation = animateFloatAsState(
-        targetValue = if (currentTab is LocationsTab) 0f else 90f
     )
 
     AnimatedVisibility(
         visible = currentTab in listOf(LocationsTab, PlansTab) && !addState.value,
-        enter = fadeIn() + slideInVertically { it / 2 },
-        exit = fadeOut() + slideOutVertically { it / 2 }
+        enter = fadeIn() + slideInHorizontally { it / 2 },
+        exit = fadeOut() + slideOutHorizontally { it / 2 }
     ) {
         FloatingActionButton(
             onClick = {
@@ -96,14 +98,32 @@ private fun FloatingActionButton(currentTab: Tab) {
                 }
             },
             content = {
-                Icon(
-                    Icons.Default.Add,
-                    contentDescription = stringResource(MR.strings.locations_add_button)
-                )
+                AnimatedContent(currentTab, transitionSpec = { fadeIn(tween(300)) togetherWith fadeOut(tween(300)) }) { tab ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.Add,
+                            contentDescription = stringResource(MR.strings.locations_add_button)
+                        )
+                        Text(
+                            text = stringResource(
+                                if (tab is LocationsTab) {
+                                    MR.strings.locations_add_button
+                                } else {
+                                    MR.strings.plans_add_button
+                                }
+                            ),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
             },
             containerColor = color.value,
             contentColor = contentColor.value,
-            modifier = Modifier.rotate(rotation.value)
+            modifier = Modifier
         )
     }
 }
