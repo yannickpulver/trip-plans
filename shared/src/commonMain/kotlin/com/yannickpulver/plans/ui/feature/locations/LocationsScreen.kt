@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
@@ -130,7 +129,7 @@ fun PlanScreenContent(
     add: (String) -> Unit,
     remove: (String) -> Unit,
     query: (String) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val focusRequester = remember { FocusRequester() }
     val lazyListState = rememberLazyListState()
@@ -195,12 +194,13 @@ private fun AddLocationItem(
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
         )
         OutlinedCard(
-            shape = RoundedCornerShape(0.dp, 0.dp, 8.dp, 8.dp),
+            shape = RoundedCornerShape(0.dp, 0.dp, 8.dp, 8.dp)
         ) {
             predictions.forEach {
                 Text(
                     text = it.description,
-                    modifier = Modifier.padding(16.dp).fillMaxWidth().clickable { add(it.id) })
+                    modifier = Modifier.padding(16.dp).fillMaxWidth().clickable { add(it.id) }
+                )
             }
         }
     }
@@ -270,7 +270,8 @@ fun LocationItem(place: Place, modifier: Modifier = Modifier) {
 
     Surface(
         modifier.fillMaxWidth()
-            .clickable { navigator?.parent?.push(LocationDetailRoute(place.id)) }) {
+            .clickable { navigator?.parent?.push(LocationDetailRoute(place.id)) }
+    ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp),

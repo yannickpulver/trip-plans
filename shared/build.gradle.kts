@@ -9,7 +9,7 @@ plugins {
     kotlin("plugin.serialization")
     id("com.codingfeline.buildkonfig")
     id("dev.icerock.mobile.multiplatform-resources")
-
+    id("org.jlleitschuh.gradle.ktlint")
 }
 
 @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
@@ -48,8 +48,6 @@ kotlin {
         }
     }
 
-
-
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -83,12 +81,15 @@ kotlin {
                 implementation(libs.voyager.tabNavigator)
             }
         }
+
+        @Suppress("UNUSED_VARIABLE")
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
             }
         }
 
+        @Suppress("UNUSED_VARIABLE")
         val androidMain by getting {
             dependsOn(commonMain)
             dependencies {
@@ -102,6 +103,8 @@ kotlin {
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
+
+        @Suppress("UNUSED_VARIABLE")
         val iosMain by getting {
             dependsOn(commonMain)
             iosX64Main.dependsOn(this)
@@ -110,10 +113,12 @@ kotlin {
             dependencies {
                 implementation(libs.ktor.client.darwin)
             }
-
-
         }
+
+        @Suppress("UNUSED_VARIABLE")
         val iosX64Test by getting
+
+        @Suppress("UNUSED_VARIABLE")
         val iosArm64Test by getting
     }
 }
@@ -138,8 +143,6 @@ dependencies {
     commonMainApi(libs.moko.resources)
     commonMainApi(libs.moko.resources.compose) // for compose multiplatform
 }
-
-
 
 buildkonfig {
     packageName = "com.yannickpulver.plans"

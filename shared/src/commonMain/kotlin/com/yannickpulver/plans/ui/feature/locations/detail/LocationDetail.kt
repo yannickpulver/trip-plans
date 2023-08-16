@@ -111,7 +111,6 @@ fun LocationDetailScreenContent(place: Place) {
         BackgroundImage(place)
 
         Column(Modifier.verticalScroll(rememberScrollState())) {
-
             Surface(
                 modifier = Modifier.padding(it).padding(top = 100.dp),
                 shadowElevation = 10.dp,

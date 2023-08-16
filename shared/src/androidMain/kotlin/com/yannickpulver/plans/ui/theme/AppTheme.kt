@@ -17,7 +17,7 @@ import androidx.core.view.WindowCompat
 actual fun AppTheme(
     useDarkTheme: Boolean,
     dynamicColor: Boolean,
-    content: @Composable() () -> Unit
+    content: @Composable () -> Unit
 ) {
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {

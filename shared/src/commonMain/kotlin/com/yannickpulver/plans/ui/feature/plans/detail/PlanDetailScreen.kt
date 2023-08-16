@@ -47,7 +47,6 @@ fun PlansDetailScreen(id: String?, viewModel: PlanDetailViewModel = koinInject()
     val state = viewModel.state.collectAsState()
     val navigator = LocalNavigator.current
 
-
     if (id == null) {
         AddPlanContent(
             state = state.value,
@@ -59,7 +58,9 @@ fun PlansDetailScreen(id: String?, viewModel: PlanDetailViewModel = koinInject()
 
 @Composable
 fun AddPlanContent(
-    state: PlanDetailViewState, onTitleChanged: (String) -> Unit, onSave: () -> Unit
+    state: PlanDetailViewState,
+    onTitleChanged: (String) -> Unit,
+    onSave: () -> Unit
 ) {
     Scaffold {
         Column(
@@ -86,7 +87,6 @@ fun AddPlanContent(
                         contentScale = ContentScale.Crop
                     )
                 }
-
             }
 
             val title = remember { mutableStateOf("") }
@@ -112,4 +112,3 @@ fun AddPlanContent(
         }
     }
 }
-

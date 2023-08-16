@@ -52,7 +52,6 @@ internal object PlansTab : Tab {
 
 @Composable
 fun PlansScreen() {
-
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -64,7 +63,6 @@ fun PlansScreen() {
             end = 16.dp
         )
     ) {
-
         items(10) {
             PlansCard(onClick = {})
         }

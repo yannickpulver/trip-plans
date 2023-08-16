@@ -51,5 +51,3 @@ private fun startKoin(extras: KoinApplication.() -> Unit) = startKoin {
         getPlatformModule()
     )
 }
-
-

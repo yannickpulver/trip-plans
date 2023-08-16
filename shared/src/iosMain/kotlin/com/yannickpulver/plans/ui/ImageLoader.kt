@@ -36,6 +36,6 @@ private fun getCacheDir(): String {
         NSUserDomainMask,
         null,
         true,
-        null,
+        null
     )!!.path.orEmpty()
 }

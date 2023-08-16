@@ -6,4 +6,3 @@ import kotlinx.serialization.Serializable
 data class PlanDto(
     val items: List<String> = emptyList()
 )
-

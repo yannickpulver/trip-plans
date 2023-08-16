@@ -23,7 +23,7 @@ class PlanDetailViewModel : ViewModel() {
                 if (it.isEmpty()) {
                     _imageUrl.value = ""
                 } else {
-                    _imageUrl.value = "https://source.unsplash.com/random/800x600?${it}"
+                    _imageUrl.value = "https://source.unsplash.com/random/800x600?$it"
                 }
             }
         }

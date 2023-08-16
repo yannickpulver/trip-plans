@@ -2,7 +2,6 @@ package com.yannickpulver.plans.ui.feature.map
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Map
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.Map
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -38,7 +37,6 @@ fun MapScreen(viewModel: MapViewModel = koinInject()) {
     val state = viewModel.state.collectAsState()
     Map(state.value.locations)
 }
-
 
 @Composable
 expect fun Map(locations: List<Place>)

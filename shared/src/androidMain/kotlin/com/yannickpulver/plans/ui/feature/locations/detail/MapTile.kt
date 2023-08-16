@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -15,7 +14,6 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.yannickpulver.plans.data.dto.Location
-import com.yannickpulver.plans.data.dto.Place
 
 @Composable
 actual fun MapTile(location: Location, modifier: Modifier) {
@@ -26,7 +24,7 @@ actual fun MapTile(location: Location, modifier: Modifier) {
 
     GoogleMap(
         modifier = modifier.fillMaxWidth().height(200.dp).clip(MaterialTheme.shapes.medium),
-        cameraPositionState = cameraPositionState,
+        cameraPositionState = cameraPositionState
     ) {
         Marker(
             state = MarkerState(position = latLng),
@@ -34,5 +32,3 @@ actual fun MapTile(location: Location, modifier: Modifier) {
         )
     }
 }
-
-

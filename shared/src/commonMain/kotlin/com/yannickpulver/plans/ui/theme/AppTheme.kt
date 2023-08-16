@@ -6,7 +6,5 @@ import androidx.compose.runtime.Composable
 expect fun AppTheme(
     useDarkTheme: Boolean,
     dynamicColor: Boolean,
-    content: @Composable() () -> Unit
+    content: @Composable () -> Unit
 )
-
-

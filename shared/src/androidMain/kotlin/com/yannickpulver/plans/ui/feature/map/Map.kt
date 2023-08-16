@@ -19,7 +19,6 @@ import com.yannickpulver.plans.ui.feature.locations.detail.LoadingScreen
 
 @Composable
 actual fun Map(locations: List<Place>) {
-
     Box(Modifier.fillMaxSize()) {
         LoadingScreen()
 
@@ -44,7 +43,7 @@ private fun MapContent(locations: List<Place>) {
 
     GoogleMap(
         modifier = Modifier.fillMaxSize().clip(MaterialTheme.shapes.medium),
-        cameraPositionState = cameraPositionState,
+        cameraPositionState = cameraPositionState
     ) {
         locations.forEach {
             val latLng = LatLng(it.geometry.location.lat, it.geometry.location.lng)

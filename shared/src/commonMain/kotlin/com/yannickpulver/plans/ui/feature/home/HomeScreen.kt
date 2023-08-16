@@ -50,7 +50,8 @@ fun HomeScreen() {
             floatingActionButton = { FloatingActionButton(it.current) },
             bottomBar = { BottomBar() },
             modifier = Modifier.fillMaxSize(),
-            content = { CurrentTab() })
+            content = { CurrentTab() }
+        )
     }
 }
 
@@ -61,13 +62,19 @@ private fun FloatingActionButton(currentTab: Tab) {
     val navigator = LocalNavigator.current
 
     val color = animateColorAsState(
-        targetValue = if (currentTab is LocationsTab)
-            MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary
+        targetValue = if (currentTab is LocationsTab) {
+            MaterialTheme.colorScheme.primary
+        } else {
+            MaterialTheme.colorScheme.tertiary
+        }
     )
 
     val contentColor = animateColorAsState(
-        targetValue = if (currentTab is LocationsTab)
-            MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onTertiary
+        targetValue = if (currentTab is LocationsTab) {
+            MaterialTheme.colorScheme.onPrimary
+        } else {
+            MaterialTheme.colorScheme.onTertiary
+        }
     )
 
     val rotation = animateFloatAsState(
@@ -96,7 +103,7 @@ private fun FloatingActionButton(currentTab: Tab) {
             },
             containerColor = color.value,
             contentColor = contentColor.value,
-            modifier = Modifier.rotate(rotation.value),
+            modifier = Modifier.rotate(rotation.value)
         )
     }
 }
@@ -118,5 +125,6 @@ fun RowScope.TabItem(tab: Tab) {
             tab.options.icon?.let { Icon(painter = it, contentDescription = tab.options.title) }
         },
         label = { Text(text = tab.options.title) },
-        onClick = { tabNavigator.current = tab })
+        onClick = { tabNavigator.current = tab }
+    )
 }

@@ -8,7 +8,6 @@ data class PredictionDto(
     val predictions: List<PlacePrediction>
 )
 
-
 @Serializable
 data class PlacePrediction(
     val description: String,

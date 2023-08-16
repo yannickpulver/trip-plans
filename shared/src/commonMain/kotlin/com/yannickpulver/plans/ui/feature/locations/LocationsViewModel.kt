@@ -50,7 +50,6 @@ class LocationsViewModel(private val firebaseRepo: FirebaseRepo, private val goo
         }
     }
 
-
     fun updateQuery(query: String) {
         _query.value = query
     }
