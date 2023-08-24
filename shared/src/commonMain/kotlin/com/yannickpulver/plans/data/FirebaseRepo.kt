@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -45,14 +46,14 @@ class FirebaseRepo {
     }
 
     fun getLocations(): Flow<List<Place?>> {
-        return userId.flatMapLatest { uid ->
+        return userId.filterNotNull().flatMapLatest { uid ->
             val ref = db.collection("plans").document(uid).collection("locations")
             ref.snapshots.map { it.documents.map { it.data() } }
         }
     }
 
     fun getLocation(id: String): Flow<Place?> {
-        return userId.flatMapLatest { uid ->
+        return userId.filterNotNull().flatMapLatest { uid ->
             val ref = db.collection("plans").document(uid).collection("locations")
                 .document(id)
             ref.snapshots.map { it.data() }
