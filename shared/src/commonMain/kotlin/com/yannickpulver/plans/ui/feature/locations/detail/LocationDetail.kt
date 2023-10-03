@@ -184,7 +184,7 @@ fun BackgroundImage(place: Place) {
     Image(
         painter = painter,
         contentDescription = null,
-        modifier = Modifier.fillMaxWidth().height(200.dp),
+        modifier = Modifier.fillMaxWidth().height(300.dp),
         contentScale = ContentScale.Crop
     )
 }
