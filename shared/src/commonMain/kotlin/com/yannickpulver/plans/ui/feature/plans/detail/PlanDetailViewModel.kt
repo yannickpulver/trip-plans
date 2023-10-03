@@ -22,7 +22,6 @@ class PlanDetailViewModel(
 
     private val _id = MutableStateFlow<String?>(null)
     private val _title = MutableStateFlow("")
-    private val _imageUrl = MutableStateFlow("")
     private val _plan = MutableStateFlow<Plan?>(null)
     private val _locations = MutableStateFlow<List<Place>>(emptyList())
     private val _predictions = MutableStateFlow<List<PlacePrediction>>(emptyList())
@@ -31,16 +30,14 @@ class PlanDetailViewModel(
     val state =
         combine(
             _title,
-            _imageUrl,
             _plan,
             _locations,
             _predictions
-        ) { title, imageUrl, plan, locations, predictions ->
+        ) { title, plan, locations, predictions ->
             PlanDetailViewState(
                 title = title,
-                imageUrl = imageUrl,
                 plan = plan,
-                locations = locations,
+                locations = locations.sortedByDescending { plan?.locations?.get(it.id)?.creationDate ?: 0 },
                 predictions = predictions
             )
         }
@@ -60,16 +57,6 @@ class PlanDetailViewModel(
         }
 
         viewModelScope.launch {
-            _title.debounce(300).collect {
-                if (it.isEmpty()) {
-                    _imageUrl.value = ""
-                } else {
-                    _imageUrl.value = "https://source.unsplash.com/random/800x600?$it"
-                }
-            }
-        }
-
-        viewModelScope.launch {
             _query.debounce(300).collect(::fetchPredictions)
         }
     }
@@ -82,6 +69,7 @@ class PlanDetailViewModel(
         viewModelScope.launch {
             val plan = firebaseRepo.addPlan(_title.value)
             _plan.value = plan
+            _id.value = plan.id
         }
     }
 

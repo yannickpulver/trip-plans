@@ -39,4 +39,4 @@ fun MapScreen(viewModel: MapViewModel = koinInject()) {
 }
 
 @Composable
-expect fun Map(locations: List<Place>)
+expect fun Map(locations: List<Place>?)

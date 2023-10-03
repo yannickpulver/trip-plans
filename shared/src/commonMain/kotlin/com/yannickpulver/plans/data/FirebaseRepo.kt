@@ -4,12 +4,15 @@ import com.benasher44.uuid.uuid4
 import com.yannickpulver.plans.data.dto.Place
 import com.yannickpulver.plans.data.dto.Plan
 import com.yannickpulver.plans.data.dto.PlanDto
+import com.yannickpulver.plans.data.util.randomEmoji
+import com.yannickpulver.plans.data.util.randomPastelColor
 import com.yannickpulver.plans.domain.AppExceptions
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.auth.auth
-import dev.gitlive.firebase.firestore.FieldValue
+import dev.gitlive.firebase.firestore.DocumentReference
 import dev.gitlive.firebase.firestore.firestore
+import dev.gitlive.firebase.firestore.orderBy
 import dev.gitlive.firebase.firestore.where
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +25,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 
 class FirebaseRepo {
 
@@ -47,79 +51,81 @@ class FirebaseRepo {
 
     suspend fun addLocation(place: Place) {
         val uid = userId.firstOrNull() ?: throw AppExceptions.NoFirebaseUserAvailable()
-        val ref = db.collection("plans").document(uid).collection("locations")
-            .document(place.id)
-        ref.set(place)
+        locationRef(uid, place.id).set(place)
     }
 
     suspend fun addLocationToPlan(planId: String, place: Place) {
         val uid = userId.firstOrNull() ?: throw AppExceptions.NoFirebaseUserAvailable()
-        val uidRef = db.collection("plans").document(uid)
+        locationRef(uid, place.id).set(place)
 
-        val locationRef = uidRef.collection("locations").document(place.id)
-        val planRef = uidRef.collection("plans").document(planId)
+        val locationData = mapOf(
+            "comment" to "Some Comment",
+            "creationDate" to Clock.System.now().epochSeconds
+        )
 
-        locationRef.set(place)
-        planRef.update("locations" to FieldValue.arrayUnion(place.id))
+        planRef(uid, planId).update("locations.${place.id}" to locationData)
     }
 
     fun observeLocations(): Flow<List<Place?>> {
         return userId.filterNotNull().filter { it.isNotEmpty() }.flatMapLatest { uid ->
-            val ref = db.collection("plans").document(uid).collection("locations")
-            ref.snapshots.map { it.documents.map { it.data() } }
+            locationsRef(uid).snapshots.map { it.documents.map { it.data() } }
         }
     }
 
     fun observePlans(): Flow<List<Plan?>> {
         return userId.filterNotNull().filter { it.isNotEmpty() }.flatMapLatest { uid ->
-            val ref = db.collection("plans").document(uid).collection("plans")
-            ref.snapshots.map { it.documents.map { it.data<Plan>().copy(id = it.id) } }
+            plansRef(uid).snapshots.map { it.documents.map { it.data<Plan>().copy(id = it.id) } }
         }
     }
 
     fun getLocation(id: String): Flow<Place?> {
         return userId.filterNotNull().flatMapLatest { uid ->
-            val ref = db.collection("plans")
-                .document(uid)
-                .collection("locations")
-                .document(id)
-            ref.snapshots.map { it.data() }
+            locationRef(uid, id).snapshots.map { it.data() }
         }
     }
 
     fun getPlan(id: String): Flow<Plan?> {
         return userId.filterNotNull().flatMapLatest { uid ->
-            val ref = db.collection("plans").document(uid).collection("plans").document(id)
+            val ref = planRef(uid, id)
             ref.snapshots.map { it.data<Plan>().copy(id = it.id) }
         }
     }
 
     fun observePlanLocations(planId: String): Flow<List<Place?>> {
         return userId.filterNotNull().flatMapLatest { uid ->
-            val uidRef = db.collection("plans").document(uid)
-            val planIdRef = uidRef.collection("plans").document(planId)
+            val planIdRef = planRef(uid, planId)
 
             planIdRef.snapshots.flatMapLatest {
-                val locations = it.data<Plan>().locations.ifEmpty { listOf("") }
-                uidRef.collection("locations")
-                    .where("reference", locations).snapshots.map { it.documents.map { it.data() } }
+                val locations = it.data<Plan>().locations.keys.toList().ifEmpty { listOf("") }
+                locationsRef(uid).where("reference", locations).snapshots.map { it.documents.map { it.data() } }
             }
         }
     }
 
     suspend fun removePlan(id: String) {
         val uid = userId.firstOrNull() ?: throw AppExceptions.NoFirebaseUserAvailable()
-        val ref = db.collection("plans").document(uid).collection("locations")
-            .document(id)
-        ref.delete()
+        locationRef(uid, id).delete()
     }
 
     suspend fun addPlan(title: String): Plan {
         val uid = userId.firstOrNull() ?: throw AppExceptions.NoFirebaseUserAvailable()
         val planId = uuid4().toString()
-        val dto = PlanDto(title)
-        val ref = db.collection("plans").document(uid).collection("plans").document(planId)
+        val dto = PlanDto(title = title, color = randomPastelColor(), icon = randomEmoji())
+        val ref = planRef(uid, planId)
         ref.set(dto)
-        return Plan(planId, title)
+        return ref.get().data<Plan>().copy(id = planId)
     }
+
+    private fun uidRef(uid: String) = db.collection("plans").document(uid)
+
+    private fun planRef(uid: String, planId: String): DocumentReference {
+        return plansRef(uid).document(planId)
+    }
+
+    private fun plansRef(uid: String) = uidRef(uid).collection("plans")
+    private fun locationRef(uid: String, locationId: String): DocumentReference {
+        return locationsRef(uid).document(locationId)
+    }
+
+    private fun locationsRef(uid: String) = uidRef(uid).collection("locations")
 }
