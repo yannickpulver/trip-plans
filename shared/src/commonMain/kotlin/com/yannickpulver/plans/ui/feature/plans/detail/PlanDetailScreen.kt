@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,17 +19,26 @@ import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -37,10 +47,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -51,7 +60,6 @@ import com.yannickpulver.plans.data.dto.Plan
 import com.yannickpulver.plans.ui.feature.locations.AddLocationItem
 import com.yannickpulver.plans.ui.feature.locations.LocationItem
 import com.yannickpulver.plans.ui.feature.locations.detail.LocationDetailRoute
-import com.yannickpulver.plans.ui.feature.locations.detail.LocationDetailScreen
 import org.koin.compose.koinInject
 
 data class PlansDetailRoute(val id: String?) : Screen {
@@ -88,6 +96,7 @@ fun PlansDetailScreen(id: String?, viewModel: PlanDetailViewModel = koinInject()
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PlanDetail(
     plan: Plan,
@@ -96,45 +105,92 @@ private fun PlanDetail(
     addLocation: (String) -> Unit,
     updateQuery: (String) -> Unit
 ) {
-    Scaffold(topBar = {
-        Box {
-            Image(
-                painter = rememberImagePainter("https://source.unsplash.com/random/1200x600?${plan.title}"),
-                contentDescription = null,
-                modifier = Modifier.fillMaxWidth().height(160.dp).padding(bottom = 20.dp),
-                contentScale = ContentScale.Crop
+    val navigator = LocalNavigator.current
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = { },
+                navigationIcon = {
+                    IconButton(
+                        onClick = { navigator?.pop() },
+                        colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.surface)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
-            Card(
-                Modifier.align(Alignment.BottomStart).fillMaxWidth().padding(horizontal = 16.dp),
-                shape = CircleShape
-            ) {
-                Text(
-                    text = plan.title,
-                    modifier = Modifier.padding(12.dp).fillMaxWidth(),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.titleMedium,
-                    textAlign = TextAlign.Center
-                )
-            }
         }
-    }) {
+    ) {
+        BackgroundImage(plan)
+
         LazyColumn(
-            Modifier.padding(top = 160.dp - 16.dp).fillMaxSize(),
-            contentPadding = PaddingValues(top = 16.dp, bottom = 100.dp)
+            Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(top = 150.dp, bottom = 100.dp)
         ) {
+
+            item {
+                Header(plan)
+            }
+
             item {
                 val focusRequester = remember { FocusRequester() }
-                AddLocationItem(focusRequester, addLocation, updateQuery, predictions)
+                AddLocationItem(
+                    focusRequester = focusRequester,
+                    add = addLocation,
+                    query = updateQuery,
+                    predictions = predictions,
+                    modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+                )
             }
 
-
             items(locations) { place ->
-                val navigator = LocalNavigator.current
-                LocationItem(place = place, onClick = { navigator?.push(LocationDetailRoute(place.id, plan.id)) })
+                LocationItem(
+                    place = place,
+                    onClick = { navigator?.push(LocationDetailRoute(place.id)) })
             }
         }
     }
+}
+
+@Composable
+private fun Header(plan: Plan) {
+    Surface(
+        shadowElevation = 10.dp,
+        shape = RoundedCornerShape(
+            topStart = 16.dp,
+            topEnd = 16.dp,
+            bottomStart = 0.dp,
+            bottomEnd = 0.dp
+        ),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp)) {
+            Text(
+                plan.title,
+                style = MaterialTheme.typography.headlineMedium,
+            )
+            Text(
+                "Subtitle",
+                style = MaterialTheme.typography.labelMedium,
+                color = Color.Gray
+            )
+        }
+    }
+}
+
+@Composable
+private fun BackgroundImage(plan: Plan) {
+    Image(
+        painter = rememberImagePainter("https://source.unsplash.com/random/1200x600?${plan.title}"),
+        contentDescription = null,
+        modifier = Modifier.fillMaxWidth().height(250.dp).padding(bottom = 20.dp),
+        contentScale = ContentScale.Crop
+    )
 }
 
 @Composable

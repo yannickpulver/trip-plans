@@ -15,21 +15,19 @@ import kotlinx.coroutines.launch
 class LocationDetailViewModel(private val firebaseRepo: FirebaseRepo) : ViewModel() {
 
     private val _id = MutableStateFlow<String?>(null)
-    private val _planId = MutableStateFlow<String?>(null)
     private val _state = MutableStateFlow<Place?>(null)
 
     val state = _state.asStateFlow()
 
     init {
         viewModelScope.launch {
-            combine(_id.filterNotNull(), _planId.filterNotNull()) { id, planId -> id to planId }
-                .flatMapLatest { (id, planId) -> firebaseRepo.getLocation(id, planId) }
+            _id.filterNotNull()
+                .flatMapLatest { firebaseRepo.getLocation(it) }
                 .collect { _state.value = it }
         }
     }
 
-    fun getLocation(id: String, planId: String) {
-        _planId.value = planId
+    fun getLocation(id: String) {
         _id.value = id
     }
 }

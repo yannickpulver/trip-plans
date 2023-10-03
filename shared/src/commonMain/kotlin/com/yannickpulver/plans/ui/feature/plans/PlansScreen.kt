@@ -73,9 +73,6 @@ fun PlansScreen(viewModel: PlansViewModel = koinInject()) {
         items(state.value) {
             PlansCard(it.title, onClick = { navigator?.parent?.push(PlansDetailRoute(it.id)) })
         }
-        items(10) {
-            PlansCard("title", onClick = {})
-        }
     }
 }
 
