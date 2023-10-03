@@ -48,6 +48,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
@@ -55,6 +56,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -171,16 +173,19 @@ fun PlanScreenContent(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun AddLocationItem(
+fun AddLocationItem(
     focusRequester: FocusRequester,
     add: (String) -> Unit,
     query: (String) -> Unit,
-    predictions: List<PlacePrediction>
+    predictions: List<PlacePrediction>,
+    modifier: Modifier = Modifier
 ) {
     val (textState, onTextChanged) = remember { mutableStateOf("") }
+    val keyboard = LocalSoftwareKeyboardController.current
     Column(
-        Modifier.fillMaxWidth().padding(16.dp),
+        modifier.fillMaxWidth().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         OutlinedTextField(
@@ -193,14 +198,20 @@ private fun AddLocationItem(
             modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
         )
-        OutlinedCard(
-            shape = RoundedCornerShape(0.dp, 0.dp, 8.dp, 8.dp)
-        ) {
-            predictions.forEach {
-                Text(
-                    text = it.description,
-                    modifier = Modifier.padding(16.dp).fillMaxWidth().clickable { add(it.id) }
-                )
+        if (textState.isNotEmpty()) {
+            OutlinedCard(
+                shape = RoundedCornerShape(0.dp, 0.dp, 8.dp, 8.dp)
+            ) {
+                predictions.forEach {
+                    Text(
+                        text = it.description,
+                        modifier = Modifier.clickable {
+                            add(it.id)
+                            onTextChanged("")
+                            keyboard?.hide()
+                        }.padding(16.dp).fillMaxWidth()
+                    )
+                }
             }
         }
     }
@@ -220,10 +231,12 @@ fun DismissableLocationItem(remove: (String) -> Unit, place: Place) {
             }
         }
     )
-
+    val navigator = LocalNavigator.current
     SwipeToDismiss(
         dismissContent = {
-            LocationItem(place = place)
+            LocationItem(
+                place = place,
+                onClick = { navigator?.parent?.push(LocationDetailRoute(it)) })
         },
         background = {
             SwipeBackground(dismissState = dismissState)
@@ -265,12 +278,11 @@ fun SwipeBackground(dismissState: DismissState) {
 }
 
 @Composable
-fun LocationItem(place: Place, modifier: Modifier = Modifier) {
-    val navigator = LocalNavigator.current
+fun LocationItem(place: Place, modifier: Modifier = Modifier, onClick: (String) -> Unit) {
 
     Surface(
         modifier.fillMaxWidth()
-            .clickable { navigator?.parent?.push(LocationDetailRoute(place.id)) }
+            .clickable(onClick = { onClick(place.id) })
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

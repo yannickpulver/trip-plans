@@ -51,7 +51,7 @@ object HomeRoute : Screen {
 
 @Composable
 fun HomeScreen() {
-    TabNavigator(LocationsTab) {
+    TabNavigator(PlansTab) {
         Scaffold(
             floatingActionButton = { FloatingActionButton(it.current) },
             bottomBar = { BottomBar() },

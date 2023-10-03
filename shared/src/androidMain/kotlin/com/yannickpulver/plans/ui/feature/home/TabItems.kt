@@ -9,7 +9,7 @@ import com.yannickpulver.plans.ui.feature.profile.ProfileTab
 
 @Composable
 actual fun RowScope.TabItems() {
-    TabItem(LocationsTab)
+    //TabItem(LocationsTab)
     TabItem(PlansTab)
     TabItem(MapTab)
     TabItem(ProfileTab)

@@ -14,23 +14,28 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.TravelExplore
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.seiko.imageloader.rememberImagePainter
 import com.yannickpulver.plans.MR
+import com.yannickpulver.plans.ui.feature.plans.detail.PlansDetailRoute
 import dev.icerock.moko.resources.compose.stringResource
+import org.koin.compose.koinInject
 
 internal object PlansTab : Tab {
     override val options: TabOptions
@@ -51,7 +56,9 @@ internal object PlansTab : Tab {
 }
 
 @Composable
-fun PlansScreen() {
+fun PlansScreen(viewModel: PlansViewModel = koinInject()) {
+    val navigator = LocalNavigator.current
+    val state = viewModel.state.collectAsState()
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -63,20 +70,19 @@ fun PlansScreen() {
             end = 16.dp
         )
     ) {
-        items(10) {
-            PlansCard(onClick = {})
+        items(state.value) {
+            PlansCard(it.title, onClick = { navigator?.parent?.push(PlansDetailRoute(it.id)) })
         }
     }
 }
 
 @Composable
-fun PlansCard(onClick: () -> Unit) {
+fun PlansCard(title: String, onClick: () -> Unit) {
     Column(Modifier.clickable(onClick = onClick)) {
         Card(
             modifier = Modifier.fillMaxWidth().height(200.dp).padding(bottom = 8.dp)
         ) {
-            val painter =
-                rememberImagePainter(url = "https://firebasestorage.googleapis.com/v0/b/trip-plans-31758.appspot.com/o/locations%2FChIJd312ZkkNOUYRCAretD6gQp4%2FAUacShj4HKV71_b_C1YQ3odpJ6sBUhbdfrqUdtf0a4be2BBaKfpCavlVPspZ9My5w6t-lUIKTKJBVP-QS3h66lbPfdf4JW3Y_6El75ITq3l3XgovY5pyKmRPV4IJrVCWWhQH00yHBYPSmgC_uruPxcI_Cchc9uFkH1TdppsBmxRibmRVjA0z.jpg?alt=media")
+            val painter = rememberImagePainter(url = "https://source.unsplash.com/random/800x600?$title")
             Image(
                 painter,
                 contentDescription = null,
@@ -84,7 +90,7 @@ fun PlansCard(onClick: () -> Unit) {
                 modifier = Modifier.fillMaxSize()
             )
         }
-        Text("Title", style = MaterialTheme.typography.titleMedium)
+        Text(title, style = MaterialTheme.typography.titleMedium)
         Text("Subtitle", style = MaterialTheme.typography.labelMedium)
     }
 }
