@@ -1,23 +1,64 @@
 package com.yannickpulver.plans.ui.feature.plans.detail
 
+import com.yannickpulver.plans.data.FirebaseRepo
+import com.yannickpulver.plans.data.GoogleMapsRepo
+import com.yannickpulver.plans.data.dto.Place
+import com.yannickpulver.plans.data.dto.PlacePrediction
+import com.yannickpulver.plans.data.dto.Plan
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class PlanDetailViewModel : ViewModel() {
+class PlanDetailViewModel(
+    private val firebaseRepo: FirebaseRepo,
+    private val googleMapsRepo: GoogleMapsRepo
+) : ViewModel() {
 
+    private val _id = MutableStateFlow<String?>(null)
     private val _title = MutableStateFlow("")
     private val _imageUrl = MutableStateFlow("")
+    private val _plan = MutableStateFlow<Plan?>(null)
+    private val _locations = MutableStateFlow<List<Place>>(emptyList())
+    private val _predictions = MutableStateFlow<List<PlacePrediction>>(emptyList())
+    private val _query = MutableStateFlow("")
 
     val state =
-        combine(_title, _imageUrl) { title, imageUrl -> PlanDetailViewState(title, imageUrl) }
+        combine(
+            _title,
+            _imageUrl,
+            _plan,
+            _locations,
+            _predictions
+        ) { title, imageUrl, plan, locations, predictions ->
+            PlanDetailViewState(
+                title = title,
+                imageUrl = imageUrl,
+                plan = plan,
+                locations = locations,
+                predictions = predictions
+            )
+        }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), PlanDetailViewState())
 
     init {
+        viewModelScope.launch {
+            _id.filterNotNull()
+                .flatMapLatest { firebaseRepo.getPlan(it) }
+                .collect { _plan.value = it }
+        }
+
+        viewModelScope.launch {
+            _id.filterNotNull()
+                .flatMapLatest { firebaseRepo.observePlanLocations(it) }
+                .collect { _locations.value = it.filterNotNull() }
+        }
+
         viewModelScope.launch {
             _title.debounce(300).collect {
                 if (it.isEmpty()) {
@@ -27,9 +68,54 @@ class PlanDetailViewModel : ViewModel() {
                 }
             }
         }
+
+        viewModelScope.launch {
+            _query.debounce(300).collect(::fetchPredictions)
+        }
     }
 
     fun onTitleChanged(title: String) {
         _title.value = title
+    }
+
+    fun save() {
+        viewModelScope.launch {
+            val plan = firebaseRepo.addPlan(_title.value)
+            _plan.value = plan
+        }
+    }
+
+    fun setId(id: String?) {
+        _id.value = id
+    }
+
+    private fun fetchPredictions(query: String) {
+        if (query.isBlank() || query.length < 3) {
+            _predictions.value = emptyList()
+            return
+        }
+
+        viewModelScope.launch {
+            val predictions = googleMapsRepo.fetchPredictions(query)
+            _predictions.value = predictions
+        }
+    }
+
+    fun addLocation(id: String) {
+        viewModelScope.launch {
+            val place = googleMapsRepo.fetchPlace(id)
+            firebaseRepo.addLocationToPlan(_id.value.orEmpty(), place)
+            updateQuery("")
+        }
+    }
+
+    fun remove(id: String) {
+        viewModelScope.launch {
+            firebaseRepo.removePlan(id)
+        }
+    }
+
+    fun updateQuery(query: String) {
+        _query.value = query
     }
 }

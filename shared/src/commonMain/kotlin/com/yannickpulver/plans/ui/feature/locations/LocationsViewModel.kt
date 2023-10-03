@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 class LocationsViewModel(private val firebaseRepo: FirebaseRepo, private val googleMapsRepo: GoogleMapsRepo) : ViewModel() {
 
     private val _state = MutableStateFlow(LocationsState.Empty)
-    val state = combine(_state, firebaseRepo.getLocations()) { state, plans ->
+    val state = combine(_state, firebaseRepo.observeLocations()) { state, plans ->
         state.copy(locations = plans.filterNotNull().reversed())
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), LocationsState.Empty)
 

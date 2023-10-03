@@ -172,7 +172,7 @@ fun PlanScreenContent(
 }
 
 @Composable
-private fun AddLocationItem(
+fun AddLocationItem(
     focusRequester: FocusRequester,
     add: (String) -> Unit,
     query: (String) -> Unit,
@@ -199,7 +199,7 @@ private fun AddLocationItem(
             predictions.forEach {
                 Text(
                     text = it.description,
-                    modifier = Modifier.padding(16.dp).fillMaxWidth().clickable { add(it.id) }
+                    modifier = Modifier.clickable { add(it.id) }.padding(16.dp).fillMaxWidth()
                 )
             }
         }
@@ -220,10 +220,10 @@ fun DismissableLocationItem(remove: (String) -> Unit, place: Place) {
             }
         }
     )
-
+    val navigator = LocalNavigator.current
     SwipeToDismiss(
         dismissContent = {
-            LocationItem(place = place)
+            LocationItem(place = place, onClick = { navigator?.parent?.push(LocationDetailRoute(it, "")) })
         },
         background = {
             SwipeBackground(dismissState = dismissState)
@@ -265,12 +265,11 @@ fun SwipeBackground(dismissState: DismissState) {
 }
 
 @Composable
-fun LocationItem(place: Place, modifier: Modifier = Modifier) {
-    val navigator = LocalNavigator.current
+fun LocationItem(place: Place, modifier: Modifier = Modifier, onClick: (String) -> Unit) {
 
     Surface(
         modifier.fillMaxWidth()
-            .clickable { navigator?.parent?.push(LocationDetailRoute(place.id)) }
+            .clickable(onClick = { onClick(place.id) })
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

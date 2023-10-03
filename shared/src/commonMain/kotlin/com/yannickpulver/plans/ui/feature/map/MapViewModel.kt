@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.stateIn
 
 class MapViewModel(firebaseRepo: FirebaseRepo) : ViewModel() {
 
-    val state = firebaseRepo.getLocations().map {
+    val state = firebaseRepo.observeLocations().map {
         MapState(it.filterNotNull())
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), MapState())
 }

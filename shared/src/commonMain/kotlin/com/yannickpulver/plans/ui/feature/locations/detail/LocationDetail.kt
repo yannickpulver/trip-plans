@@ -51,19 +51,19 @@ import com.seiko.imageloader.rememberImagePainter
 import com.yannickpulver.plans.data.dto.Place
 import org.koin.compose.koinInject
 
-data class LocationDetailRoute(val id: String) : Screen {
+data class LocationDetailRoute(val id: String, val planId: String) : Screen {
     @Composable
     override fun Content() {
-        LocationDetailScreen(id)
+        LocationDetailScreen(id, planId)
     }
 }
 
 @Composable
-fun LocationDetailScreen(id: String, viewModel: LocationDetailViewModel = koinInject()) {
+fun LocationDetailScreen(id: String, planId: String, viewModel: LocationDetailViewModel = koinInject()) {
     val state = viewModel.state.collectAsState()
 
     LaunchedEffect(id) {
-        viewModel.getLocation(id)
+        viewModel.getLocation(id, planId)
     }
 
     AnimatedContent(state.value) {
