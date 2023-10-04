@@ -26,6 +26,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.LayoutDirection
@@ -105,7 +106,7 @@ fun PlansCard(plan: Plan, onClick: () -> Unit) {
             }
         }
         Text(plan.title, style = MaterialTheme.typography.titleMedium)
-        Text("Subtitle", style = MaterialTheme.typography.labelMedium)
+        Text("${plan.locations.size} locations", style = MaterialTheme.typography.labelMedium, modifier = Modifier.alpha(0.5f))
     }
 }
 

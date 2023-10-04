@@ -12,12 +12,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
@@ -60,6 +58,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.tab.Tab
@@ -175,22 +174,23 @@ fun PlanScreenContent(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AddLocationItem(
     focusRequester: FocusRequester,
     add: (String) -> Unit,
     query: (String) -> Unit,
     predictions: List<PlacePrediction>,
+    predictionsBelow: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     val (textState, onTextChanged) = remember { mutableStateOf("") }
-    val keyboard = LocalSoftwareKeyboardController.current
     Column(
         modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(Modifier.height(16.dp))
+        if (!predictionsBelow) {
+            PredictionsList(textState, predictions, add, onTextChanged)
+        }
         OutlinedTextField(
             value = textState,
             onValueChange = {
@@ -201,20 +201,37 @@ fun AddLocationItem(
             modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
         )
-        if (textState.isNotEmpty()) {
-            OutlinedCard(
-                shape = RoundedCornerShape(0.dp, 0.dp, 8.dp, 8.dp)
-            ) {
-                predictions.forEach {
-                    Text(
-                        text = it.description,
-                        modifier = Modifier.clickable {
-                            add(it.id)
-                            onTextChanged("")
-                            keyboard?.hide()
-                        }.padding(16.dp).fillMaxWidth()
-                    )
-                }
+        if (predictionsBelow) {
+            PredictionsList(textState, predictions, add, onTextChanged)
+        }
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun PredictionsList(
+    textState: String,
+    predictions: List<PlacePrediction>,
+    add: (String) -> Unit,
+    onTextChanged: (String) -> Unit,
+) {
+    val keyboard = LocalSoftwareKeyboardController.current
+
+    if (textState.isNotEmpty()) {
+        OutlinedCard(
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            predictions.forEach {
+                Text(
+                    text = it.description,
+                    modifier = Modifier.clickable {
+                        add(it.id)
+                        onTextChanged("")
+                        keyboard?.hide()
+                    }.padding(12.dp).fillMaxWidth(),
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1
+                )
             }
         }
     }

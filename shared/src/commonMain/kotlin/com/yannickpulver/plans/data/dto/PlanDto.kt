@@ -16,7 +16,7 @@ data class Plan(
     val title: String = "",
     val color: String = "",
     val icon: String = "",
-    val locations: Map<String, PlanLocation> = emptyMap()
+    val locations: Map<String, PlanLocation> = emptyMap(),
 )
 
 @Serializable

@@ -6,13 +6,21 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -23,8 +31,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -84,28 +92,35 @@ private fun PlanDetail(
     val navigator = LocalNavigator.current
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { AppBar(onClick = { navigator?.pop() }) }
-    ) {
-        BackgroundImage(plan)
-
-        LazyColumn(
-            Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(top = 150.dp, bottom = 100.dp)
-        ) {
-
-            item {
-                Header(plan)
-            }
-
-            item {
+        topBar = { AppBar(onClick = { navigator?.pop() }) },
+        bottomBar = {
+            Surface(
+                color = MaterialTheme.colorScheme.surface,
+                shape = RoundedCornerShape(8.dp, 8.dp, 0.dp, 0.dp),
+                shadowElevation = 4.dp,
+                tonalElevation = 2.dp
+            ) {
                 val focusRequester = remember { FocusRequester() }
                 AddLocationItem(
                     focusRequester = focusRequester,
                     add = addLocation,
                     query = updateQuery,
                     predictions = predictions,
-                    modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+                    modifier = Modifier.navigationBarsPadding().imePadding()
+                        .padding(bottom = 4.dp, top = 12.dp),
+                    predictionsBelow = false
                 )
+            }
+        }
+    ) {
+        BackgroundImage(plan)
+
+        LazyColumn(
+            Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(top = 100.dp, bottom = 100.dp)
+        ) {
+            item {
+                Header(plan)
             }
 
             items(locations) { place ->
@@ -113,6 +128,8 @@ private fun PlanDetail(
                     place = place,
                     onClick = { navigator?.push(LocationDetailRoute(place.id)) })
             }
+
+            item { Spacer(Modifier.padding(WindowInsets.ime.asPaddingValues()).height(24.dp)) }
         }
     }
 }
@@ -129,7 +146,10 @@ private fun Header(plan: Plan) {
         ),
         modifier = Modifier.fillMaxWidth()
     ) {
-        Column(modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(
+            modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(
                     plan.icon,
@@ -141,10 +161,11 @@ private fun Header(plan: Plan) {
                 )
             }
             Text(
-                "Subtitle",
+                "${plan.locations.size} locations",
                 style = MaterialTheme.typography.labelMedium,
-                color = Color.Gray
+                modifier = Modifier.alpha(0.5f)
             )
+            Divider(color = DividerDefaults.color.copy(0.2f))
         }
     }
 }
