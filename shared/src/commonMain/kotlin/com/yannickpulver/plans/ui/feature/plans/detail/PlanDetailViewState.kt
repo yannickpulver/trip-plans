@@ -5,9 +5,12 @@ import com.yannickpulver.plans.data.dto.PlacePrediction
 import com.yannickpulver.plans.data.dto.Plan
 
 data class PlanDetailViewState(
-    val title: String = "",
-    val imageUrl: String = "",
     val plan: Plan? = null,
     val locations: List<Place> = emptyList(),
     val predictions: List<PlacePrediction> = emptyList()
 )
+
+
+data class PlanStyle(
+    val color: String,
+    val emoji : String)

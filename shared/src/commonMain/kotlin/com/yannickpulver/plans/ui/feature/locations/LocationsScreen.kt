@@ -197,8 +197,11 @@ fun AddLocationItem(
                 onTextChanged(it)
                 query(it)
             },
-            label = { Text(stringResource(MR.strings.locations_add_hint)) },
-            modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
+            placeholder = { Text(stringResource(MR.strings.locations_add_hint)) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusRequester)
+                .background(MaterialTheme.colorScheme.surface),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
         )
         if (predictionsBelow) {

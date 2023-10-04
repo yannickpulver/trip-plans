@@ -78,6 +78,7 @@ kotlin {
                 implementation(libs.uuid)
 
                 implementation(libs.voyager.navigator)
+                implementation(libs.voyager.transitions)
                 implementation(libs.voyager.tabNavigator)
             }
         }

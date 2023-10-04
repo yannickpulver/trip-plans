@@ -1,17 +1,20 @@
 package com.yannickpulver.plans.ui.feature.locations.detail
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -49,6 +52,7 @@ import com.seiko.imageloader.rememberImageAction
 import com.seiko.imageloader.rememberImageActionPainter
 import com.seiko.imageloader.rememberImagePainter
 import com.yannickpulver.plans.data.dto.Place
+import com.yannickpulver.plans.ui.ext.plus
 import org.koin.compose.koinInject
 
 data class LocationDetailRoute(val id: String) : Screen {
@@ -66,13 +70,9 @@ fun LocationDetailScreen(id: String, viewModel: LocationDetailViewModel = koinIn
         viewModel.getLocation(id)
     }
 
-    AnimatedContent(state.value) {
-        if (it != null) {
-            LocationDetailScreenContent(it)
-        } else {
-            LoadingScreen()
-        }
-    }
+    state.value?.let {
+        LocationDetailScreenContent(it)
+    } ?: LoadingScreen()
 }
 
 @Composable
@@ -112,7 +112,12 @@ fun LocationDetailScreenContent(place: Place) {
 
         Column(Modifier.verticalScroll(rememberScrollState())) {
             Surface(
-                modifier = Modifier.padding(it).padding(top = 100.dp),
+                modifier = Modifier.padding(
+                    WindowInsets.statusBars.asPaddingValues() + PaddingValues(
+                        top = 100.dp,
+                        bottom = 100.dp
+                    )
+                ),
                 shadowElevation = 10.dp,
                 shape = RoundedCornerShape(
                     topStart = 16.dp,

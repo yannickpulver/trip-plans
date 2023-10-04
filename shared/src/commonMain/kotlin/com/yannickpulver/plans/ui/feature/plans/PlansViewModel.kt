@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-class PlansViewModel(private val firebaseRepo: FirebaseRepo) : ViewModel() {
+class PlansViewModel(firebaseRepo: FirebaseRepo) : ViewModel() {
 
     val state: StateFlow<List<Plan>> = firebaseRepo.observePlans().map { it.filterNotNull() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())

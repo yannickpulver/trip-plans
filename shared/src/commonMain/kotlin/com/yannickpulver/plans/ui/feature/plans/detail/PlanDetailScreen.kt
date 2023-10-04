@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,14 +42,15 @@ import com.yannickpulver.plans.data.dto.Place
 import com.yannickpulver.plans.data.dto.PlacePrediction
 import com.yannickpulver.plans.data.dto.Plan
 import com.yannickpulver.plans.ui.components.AppBar
+import com.yannickpulver.plans.ui.ext.plus
 import com.yannickpulver.plans.ui.feature.locations.AddLocationItem
 import com.yannickpulver.plans.ui.feature.locations.LocationItem
+import com.yannickpulver.plans.ui.feature.locations.detail.LoadingScreen
 import com.yannickpulver.plans.ui.feature.locations.detail.LocationDetailRoute
-import com.yannickpulver.plans.ui.feature.plans.add.AddPlanContent
 import com.yannickpulver.plans.ui.feature.plans.uiColor
 import org.koin.compose.koinInject
 
-data class PlansDetailRoute(val id: String?) : Screen {
+data class PlansDetailRoute(val id: String) : Screen {
     @Composable
     override fun Content() {
         PlansDetailScreen(id)
@@ -55,30 +58,22 @@ data class PlansDetailRoute(val id: String?) : Screen {
 }
 
 @Composable
-fun PlansDetailScreen(id: String?, viewModel: PlanDetailViewModel = koinInject()) {
+fun PlansDetailScreen(id: String, viewModel: PlanDetailViewModel = koinInject()) {
     val state = viewModel.state.collectAsState()
 
     LaunchedEffect(id) {
         viewModel.setId(id)
     }
 
-    if (id == null && state.value.plan == null) {
-        AddPlanContent(
-            state = state.value,
-            onTitleChanged = viewModel::onTitleChanged,
-            onSave = { viewModel.save() }
+    state.value.plan?.let {
+        PlanDetail(
+            plan = it,
+            locations = state.value.locations,
+            state.value.predictions,
+            viewModel::addLocation,
+            viewModel::updateQuery
         )
-    } else {
-        state.value.plan?.let {
-            PlanDetail(
-                plan = it,
-                locations = state.value.locations,
-                state.value.predictions,
-                viewModel::addLocation,
-                viewModel::updateQuery
-            )
-        }
-    }
+    } ?: LoadingScreen()
 }
 
 @Composable
@@ -113,11 +108,10 @@ private fun PlanDetail(
             }
         }
     ) {
-        BackgroundImage(plan)
 
         LazyColumn(
             Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(top = 100.dp, bottom = 100.dp)
+            contentPadding = PaddingValues(bottom = 100.dp)
         ) {
             item {
                 Header(plan)
@@ -136,36 +130,39 @@ private fun PlanDetail(
 
 @Composable
 private fun Header(plan: Plan) {
-    Surface(
-        shadowElevation = 10.dp,
-        shape = RoundedCornerShape(
-            topStart = 16.dp,
-            topEnd = 16.dp,
-            bottomStart = 0.dp,
-            bottomEnd = 0.dp
-        ),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(
-            modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+    Column(Modifier.background(plan.uiColor())) {
+        Spacer(Modifier.height(100.dp).padding(WindowInsets.statusBars.asPaddingValues()))
+        Surface(
+            //shadowElevation = 10.dp,
+            shape = RoundedCornerShape(
+                topStart = 16.dp,
+                topEnd = 16.dp,
+                bottomStart = 0.dp,
+                bottomEnd = 0.dp
+            ),
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(
+                modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(
+                        plan.icon,
+                        style = MaterialTheme.typography.headlineMedium,
+                    )
+                    Text(
+                        plan.title,
+                        style = MaterialTheme.typography.headlineMedium,
+                    )
+                }
                 Text(
-                    plan.icon,
-                    style = MaterialTheme.typography.headlineMedium,
+                    "${plan.locations.size} locations",
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier.alpha(0.5f)
                 )
-                Text(
-                    plan.title,
-                    style = MaterialTheme.typography.headlineMedium,
-                )
+                Divider(color = DividerDefaults.color.copy(0.2f))
             }
-            Text(
-                "${plan.locations.size} locations",
-                style = MaterialTheme.typography.labelMedium,
-                modifier = Modifier.alpha(0.5f)
-            )
-            Divider(color = DividerDefaults.color.copy(0.2f))
         }
     }
 }
@@ -173,7 +170,7 @@ private fun Header(plan: Plan) {
 @Composable
 private fun BackgroundImage(plan: Plan) {
     Box(
-        Modifier.fillMaxWidth().height(250.dp).background(plan.uiColor()),
+        Modifier.fillMaxSize().background(plan.uiColor()),
         contentAlignment = Alignment.Center
     ) {
         //Text(plan.icon, modifier = Modifier.padding(bottom = 24.dp))

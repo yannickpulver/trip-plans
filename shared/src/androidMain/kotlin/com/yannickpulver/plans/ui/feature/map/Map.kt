@@ -43,7 +43,7 @@ private fun MapContent(locations: List<Place>) {
                 include(LatLng(it.geometry.location.lat, it.geometry.location.lng))
             }
         }.build()
-        cameraPositionState.move(CameraUpdateFactory.newLatLngBounds(bounds, 200))
+        cameraPositionState.move(CameraUpdateFactory.newLatLngBounds(bounds, 0))
     }
 
     GoogleMap(

@@ -6,6 +6,7 @@ import com.yannickpulver.plans.data.GoogleMapsRepo
 import com.yannickpulver.plans.ui.feature.locations.detail.LocationDetailViewModel
 import com.yannickpulver.plans.ui.feature.map.MapViewModel
 import com.yannickpulver.plans.ui.feature.plans.PlansViewModel
+import com.yannickpulver.plans.ui.feature.plans.add.AddPlanViewModel
 import com.yannickpulver.plans.ui.feature.plans.detail.PlanDetailViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -49,6 +50,7 @@ private fun startKoin(extras: KoinApplication.() -> Unit) = startKoin {
             viewModelDefinition { MapViewModel(get()) }
             viewModelDefinition { PlanDetailViewModel(get(), get()) }
             viewModelDefinition { PlansViewModel(get()) }
+            viewModelDefinition { AddPlanViewModel(get()) }
         },
         getPlatformModule()
     )

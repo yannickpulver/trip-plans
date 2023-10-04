@@ -6,4 +6,6 @@
     <string name="locations.add.hint">Add Location</string>
     <string name="locations.add.button">Add Location</string>
     <string name="plans.add.button">Add Plan</string>
+    <string name="plans.add.placeholder">Title</string>
+    <string name="plans.subtitle">%s Locations</string>
 </resources>

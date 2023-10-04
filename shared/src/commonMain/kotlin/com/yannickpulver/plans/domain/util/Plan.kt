@@ -1,4 +1,4 @@
-package com.yannickpulver.plans.data.util
+package com.yannickpulver.plans.domain.util
 
 fun randomEmoji(): String {
     val emojis = listOf(

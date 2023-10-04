@@ -21,7 +21,6 @@ class PlanDetailViewModel(
 ) : ViewModel() {
 
     private val _id = MutableStateFlow<String?>(null)
-    private val _title = MutableStateFlow("")
     private val _plan = MutableStateFlow<Plan?>(null)
     private val _locations = MutableStateFlow<List<Place>>(emptyList())
     private val _predictions = MutableStateFlow<List<PlacePrediction>>(emptyList())
@@ -29,13 +28,11 @@ class PlanDetailViewModel(
 
     val state =
         combine(
-            _title,
             _plan,
             _locations,
             _predictions
-        ) { title, plan, locations, predictions ->
+        ) { plan, locations, predictions ->
             PlanDetailViewState(
-                title = title,
                 plan = plan,
                 locations = locations.sortedByDescending { plan?.locations?.get(it.id)?.creationDate ?: 0 },
                 predictions = predictions
@@ -58,18 +55,6 @@ class PlanDetailViewModel(
 
         viewModelScope.launch {
             _query.debounce(300).collect(::fetchPredictions)
-        }
-    }
-
-    fun onTitleChanged(title: String) {
-        _title.value = title
-    }
-
-    fun save() {
-        viewModelScope.launch {
-            val plan = firebaseRepo.addPlan(_title.value)
-            _plan.value = plan
-            _id.value = plan.id
         }
     }
 

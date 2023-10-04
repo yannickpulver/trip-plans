@@ -4,15 +4,14 @@ import com.benasher44.uuid.uuid4
 import com.yannickpulver.plans.data.dto.Place
 import com.yannickpulver.plans.data.dto.Plan
 import com.yannickpulver.plans.data.dto.PlanDto
-import com.yannickpulver.plans.data.util.randomEmoji
-import com.yannickpulver.plans.data.util.randomPastelColor
+import com.yannickpulver.plans.domain.util.randomEmoji
+import com.yannickpulver.plans.domain.util.randomPastelColor
 import com.yannickpulver.plans.domain.AppExceptions
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.auth.auth
 import dev.gitlive.firebase.firestore.DocumentReference
 import dev.gitlive.firebase.firestore.firestore
-import dev.gitlive.firebase.firestore.orderBy
 import dev.gitlive.firebase.firestore.where
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -107,10 +106,10 @@ class FirebaseRepo {
         locationRef(uid, id).delete()
     }
 
-    suspend fun addPlan(title: String): Plan {
+    suspend fun addPlan(title: String, color: String, emoji: String): Plan {
         val uid = userId.firstOrNull() ?: throw AppExceptions.NoFirebaseUserAvailable()
         val planId = uuid4().toString()
-        val dto = PlanDto(title = title, color = randomPastelColor(), icon = randomEmoji())
+        val dto = PlanDto(title = title, color = color, icon = emoji)
         val ref = planRef(uid, planId)
         ref.set(dto)
         return ref.get().data<Plan>().copy(id = planId)

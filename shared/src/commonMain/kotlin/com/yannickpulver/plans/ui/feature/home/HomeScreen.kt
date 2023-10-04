@@ -38,6 +38,7 @@ import cafe.adriel.voyager.navigator.tab.TabNavigator
 import com.yannickpulver.plans.MR
 import com.yannickpulver.plans.ui.feature.locations.LocationsTab
 import com.yannickpulver.plans.ui.feature.plans.PlansTab
+import com.yannickpulver.plans.ui.feature.plans.add.AddPlanRoute
 import com.yannickpulver.plans.ui.feature.plans.detail.PlansDetailRoute
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.launch
@@ -93,7 +94,7 @@ private fun FloatingActionButton(currentTab: Tab) {
                 scope.launch {
                     when (currentTab) {
                         is LocationsTab -> AddStateHolder.show(true)
-                        is PlansTab -> navigator?.parent?.push(PlansDetailRoute(null))
+                        is PlansTab -> navigator?.parent?.push(AddPlanRoute)
                     }
                 }
             },
