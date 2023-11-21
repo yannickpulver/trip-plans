@@ -1,10 +1,10 @@
 package com.yannickpulver.plans.ui.feature.plans.detail
 
-import com.yannickpulver.plans.data.FirebaseRepo
-import com.yannickpulver.plans.data.GoogleMapsRepo
 import com.yannickpulver.plans.data.dto.Place
 import com.yannickpulver.plans.data.dto.PlacePrediction
 import com.yannickpulver.plans.data.dto.Plan
+import com.yannickpulver.plans.domain.DataRepository
+import com.yannickpulver.plans.domain.MapsRepository
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,8 +16,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class PlanDetailViewModel(
-    private val firebaseRepo: FirebaseRepo,
-    private val googleMapsRepo: GoogleMapsRepo
+    private val dataRepository: DataRepository,
+    private val mapsRepo: MapsRepository
 ) : ViewModel() {
 
     private val _id = MutableStateFlow<String?>(null)
@@ -34,7 +34,9 @@ class PlanDetailViewModel(
         ) { plan, locations, predictions ->
             PlanDetailViewState(
                 plan = plan,
-                locations = locations.sortedByDescending { plan?.locations?.get(it.id)?.creationDate ?: 0 },
+                locations = locations.sortedByDescending {
+                    plan?.locations?.get(it.id)?.creationDate ?: 0
+                },
                 predictions = predictions
             )
         }
@@ -43,13 +45,13 @@ class PlanDetailViewModel(
     init {
         viewModelScope.launch {
             _id.filterNotNull()
-                .flatMapLatest { firebaseRepo.getPlan(it) }
+                .flatMapLatest { dataRepository.getPlan(it) }
                 .collect { _plan.value = it }
         }
 
         viewModelScope.launch {
             _id.filterNotNull()
-                .flatMapLatest { firebaseRepo.observePlanLocations(it) }
+                .flatMapLatest { dataRepository.observePlanLocations(it) }
                 .collect { _locations.value = it.filterNotNull() }
         }
 
@@ -69,22 +71,22 @@ class PlanDetailViewModel(
         }
 
         viewModelScope.launch {
-            val predictions = googleMapsRepo.fetchPredictions(query)
+            val predictions = mapsRepo.fetchPredictions(query)
             _predictions.value = predictions
         }
     }
 
     fun addLocation(id: String) {
         viewModelScope.launch {
-            val place = googleMapsRepo.fetchPlace(id)
-            firebaseRepo.addLocationToPlan(_id.value.orEmpty(), place)
+            val place = mapsRepo.fetchPlace(id)
+            dataRepository.addLocationToPlan(_id.value.orEmpty(), place)
             updateQuery("")
         }
     }
 
     fun remove(id: String) {
         viewModelScope.launch {
-            firebaseRepo.removePlan(id)
+            dataRepository.removePlan(id)
         }
     }
 

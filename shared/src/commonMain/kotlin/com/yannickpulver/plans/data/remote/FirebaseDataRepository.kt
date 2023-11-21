@@ -1,12 +1,11 @@
-package com.yannickpulver.plans.data
+package com.yannickpulver.plans.data.remote
 
 import com.benasher44.uuid.uuid4
 import com.yannickpulver.plans.data.dto.Place
 import com.yannickpulver.plans.data.dto.Plan
 import com.yannickpulver.plans.data.dto.PlanDto
-import com.yannickpulver.plans.domain.util.randomEmoji
-import com.yannickpulver.plans.domain.util.randomPastelColor
 import com.yannickpulver.plans.domain.AppExceptions
+import com.yannickpulver.plans.domain.DataRepository
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.auth.auth
@@ -26,7 +25,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 
-class FirebaseRepo {
+class FirebaseDataRepository : DataRepository {
 
     private val auth = Firebase.auth
     private val db = Firebase.firestore
@@ -48,12 +47,12 @@ class FirebaseRepo {
         return auth.signInAnonymously().user
     }
 
-    suspend fun addLocation(place: Place) {
+    override suspend fun addLocation(place: Place) {
         val uid = userId.firstOrNull() ?: throw AppExceptions.NoFirebaseUserAvailable()
         locationRef(uid, place.id).set(place)
     }
 
-    suspend fun addLocationToPlan(planId: String, place: Place) {
+    override suspend fun addLocationToPlan(planId: String, place: Place) {
         val uid = userId.firstOrNull() ?: throw AppExceptions.NoFirebaseUserAvailable()
         locationRef(uid, place.id).set(place)
 
@@ -65,32 +64,32 @@ class FirebaseRepo {
         planRef(uid, planId).update("locations.${place.id}" to locationData)
     }
 
-    fun observeLocations(): Flow<List<Place?>> {
+    override fun observeLocations(): Flow<List<Place?>> {
         return userId.filterNotNull().filter { it.isNotEmpty() }.flatMapLatest { uid ->
             locationsRef(uid).snapshots.map { it.documents.map { it.data() } }
         }
     }
 
-    fun observePlans(): Flow<List<Plan?>> {
+    override fun observePlans(): Flow<List<Plan?>> {
         return userId.filterNotNull().filter { it.isNotEmpty() }.flatMapLatest { uid ->
             plansRef(uid).snapshots.map { it.documents.map { it.data<Plan>().copy(id = it.id) } }
         }
     }
 
-    fun getLocation(id: String): Flow<Place?> {
+    override fun getLocation(id: String): Flow<Place?> {
         return userId.filterNotNull().flatMapLatest { uid ->
             locationRef(uid, id).snapshots.map { it.data() }
         }
     }
 
-    fun getPlan(id: String): Flow<Plan?> {
+    override fun getPlan(id: String): Flow<Plan?> {
         return userId.filterNotNull().flatMapLatest { uid ->
             val ref = planRef(uid, id)
             ref.snapshots.map { it.data<Plan>().copy(id = it.id) }
         }
     }
 
-    fun observePlanLocations(planId: String): Flow<List<Place?>> {
+    override fun observePlanLocations(planId: String): Flow<List<Place?>> {
         return userId.filterNotNull().flatMapLatest { uid ->
             val planIdRef = planRef(uid, planId)
 
@@ -101,12 +100,12 @@ class FirebaseRepo {
         }
     }
 
-    suspend fun removePlan(id: String) {
+    override suspend fun removePlan(id: String) {
         val uid = userId.firstOrNull() ?: throw AppExceptions.NoFirebaseUserAvailable()
         locationRef(uid, id).delete()
     }
 
-    suspend fun addPlan(title: String, color: String, emoji: String): Plan {
+    override suspend fun addPlan(title: String, color: String, emoji: String): Plan {
         val uid = userId.firstOrNull() ?: throw AppExceptions.NoFirebaseUserAvailable()
         val planId = uuid4().toString()
         val dto = PlanDto(title = title, color = color, icon = emoji)

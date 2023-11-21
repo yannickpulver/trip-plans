@@ -1,16 +1,15 @@
 package com.yannickpulver.plans.ui.feature.plans
 
-import com.yannickpulver.plans.data.FirebaseRepo
 import com.yannickpulver.plans.data.dto.Plan
+import com.yannickpulver.plans.domain.DataRepository
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-class PlansViewModel(firebaseRepo: FirebaseRepo) : ViewModel() {
+class PlansViewModel(dataRepository: DataRepository) : ViewModel() {
 
-    val state: StateFlow<List<Plan>> = firebaseRepo.observePlans().map { it.filterNotNull() }
+    val state: StateFlow<List<Plan>> = dataRepository.observePlans().map { it.filterNotNull() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 }

@@ -1,8 +1,10 @@
 package com.yannickpulver.plans.di
 
 import LocationsViewModel
-import com.yannickpulver.plans.data.FirebaseRepo
-import com.yannickpulver.plans.data.GoogleMapsRepo
+import com.yannickpulver.plans.data.remote.FirebaseDataRepository
+import com.yannickpulver.plans.data.remote.GoogleMapsRepository
+import com.yannickpulver.plans.domain.DataRepository
+import com.yannickpulver.plans.domain.MapsRepository
 import com.yannickpulver.plans.ui.feature.locations.detail.LocationDetailViewModel
 import com.yannickpulver.plans.ui.feature.map.MapViewModel
 import com.yannickpulver.plans.ui.feature.plans.PlansViewModel
@@ -43,8 +45,8 @@ private fun startKoin(extras: KoinApplication.() -> Unit) = startKoin {
                 }
             }
 
-            single { FirebaseRepo() }
-            single { GoogleMapsRepo(get()) }
+            single<DataRepository> { FirebaseDataRepository() }
+            single<MapsRepository> { GoogleMapsRepository(get()) }
             viewModelDefinition { LocationsViewModel(get(), get()) }
             viewModelDefinition { LocationDetailViewModel(get()) }
             viewModelDefinition { MapViewModel(get()) }

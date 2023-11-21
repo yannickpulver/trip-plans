@@ -3,7 +3,7 @@ agp = "8.2.0-alpha15"
 androidx-test-ext-junit = "1.1.5"
 appcompat = "1.6.1"
 buildkonfig-gradle-plugin = "0.13.3"
-compose= "1.5.10-beta02"
+compose = "1.5.10-beta02"
 core = "1.12.0"
 core-ktx = "1.12.0"
 espresso-core = "3.5.1"
@@ -19,6 +19,7 @@ kotlinx-serialization-json = "1.5.1"
 ktor = "2.3.3"
 material = "1.9.0"
 moko-mvvm = "0.16.1"
+moko-test = "0.6.1"
 moko-resources = "0.23.0"
 uuid = "0.8.0"
 voyager = "1.0.0-rc07"
@@ -41,6 +42,7 @@ koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", versi
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin-compose" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin-core" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines-core" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines-core" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
@@ -55,6 +57,7 @@ mvvm-core = { module = "dev.icerock.moko:mvvm-core", version.ref = "moko-mvvm" }
 mvvm-flow-compose = { module = "dev.icerock.moko:mvvm-flow-compose", version.ref = "moko-mvvm" }
 mvvm-flow = { module = "dev.icerock.moko:mvvm-flow", version.ref = "moko-mvvm" }
 moko-resources = { module = "dev.icerock.moko:resources", version.ref = "moko-resources" }
+moko-test = { module = "dev.icerock.moko:test-core", version.ref = "moko-test" }
 moko-resources-compose = { module = "dev.icerock.moko:resources-compose", version.ref = "moko-resources" }
 moko-resources-generator = { module = "dev.icerock.moko:resources-generator", version.ref = "moko-resources" }
 uuid = { module = "com.benasher44:uuid", version.ref = "uuid" }

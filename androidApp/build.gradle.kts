@@ -17,7 +17,8 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        manifestPlaceholders["MAPS_API_KEY"] = gradleLocalProperties(rootDir).getProperty("MAPS_API_KEY")
+        manifestPlaceholders["MAPS_API_KEY"] =
+            gradleLocalProperties(rootDir).getProperty("MAPS_API_KEY")
     }
     buildFeatures {
         compose = true
@@ -51,7 +52,13 @@ android {
         }
         getByName("release") {
             signingConfig = signingConfigs.getByName("release")
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isDebuggable = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+
         }
     }
     compileOptions {

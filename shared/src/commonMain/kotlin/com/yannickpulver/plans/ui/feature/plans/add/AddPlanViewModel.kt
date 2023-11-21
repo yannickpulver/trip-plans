@@ -1,6 +1,6 @@
 package com.yannickpulver.plans.ui.feature.plans.add
 
-import com.yannickpulver.plans.data.FirebaseRepo
+import com.yannickpulver.plans.domain.DataRepository
 import com.yannickpulver.plans.domain.util.randomEmoji
 import com.yannickpulver.plans.domain.util.randomPastelColor
 import com.yannickpulver.plans.ui.feature.plans.detail.PlanStyle
@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class AddPlanViewModel(
-    private val firebaseRepo: FirebaseRepo,
+    private val dataRepository: DataRepository,
 ) : ViewModel() {
 
     private val _title = MutableStateFlow("")
@@ -46,7 +46,7 @@ class AddPlanViewModel(
     fun save() {
         viewModelScope.launch {
             val style = _style.value ?: updateStyle()
-            val plan = firebaseRepo.addPlan(_title.value, style.color, style.emoji)
+            val plan = dataRepository.addPlan(_title.value, style.color, style.emoji)
             _events.emit(AddPlanEvent.Success(plan.id))
         }
     }

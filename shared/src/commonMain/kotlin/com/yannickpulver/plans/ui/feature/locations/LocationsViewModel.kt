@@ -1,5 +1,5 @@
-import com.yannickpulver.plans.data.FirebaseRepo
-import com.yannickpulver.plans.data.GoogleMapsRepo
+import com.yannickpulver.plans.domain.DataRepository
+import com.yannickpulver.plans.domain.MapsRepository
 import com.yannickpulver.plans.ui.feature.locations.LocationsState
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -7,12 +7,13 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class LocationsViewModel(private val firebaseRepo: FirebaseRepo, private val googleMapsRepo: GoogleMapsRepo) : ViewModel() {
+class LocationsViewModel(private val dataRepository: DataRepository, private val mapsRepo: MapsRepository) : ViewModel() {
 
     private val _state = MutableStateFlow(LocationsState.Empty)
-    val state = combine(_state, firebaseRepo.observeLocations()) { state, plans ->
+    val state = combine(_state, dataRepository.observeLocations()) { state, plans ->
         state.copy(locations = plans.filterNotNull().reversed())
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), LocationsState.Empty)
 
@@ -20,7 +21,7 @@ class LocationsViewModel(private val firebaseRepo: FirebaseRepo, private val goo
 
     init {
         viewModelScope.launch {
-            _query.debounce(300).collect(::fetchPredictions)
+            _query.collect(::fetchPredictions)
         }
     }
 
@@ -31,22 +32,22 @@ class LocationsViewModel(private val firebaseRepo: FirebaseRepo, private val goo
         }
 
         viewModelScope.launch {
-            val predictions = googleMapsRepo.fetchPredictions(query)
-            _state.value = _state.value.copy(predictions = predictions)
+            val predictions = mapsRepo.fetchPredictions(query)
+            _state.update { LocationsState(predictions = predictions) }
         }
     }
 
     fun add(id: String) {
         viewModelScope.launch {
-            val place = googleMapsRepo.fetchPlace(id)
-            firebaseRepo.addLocation(place)
+            val place = mapsRepo.fetchPlace(id)
+            dataRepository.addLocation(place)
             updateQuery("")
         }
     }
 
     fun remove(id: String) {
         viewModelScope.launch {
-            firebaseRepo.removePlan(id)
+            dataRepository.removePlan(id)
         }
     }
 
